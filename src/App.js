@@ -150,16 +150,6 @@ class ScanScreen extends React.Component {
         <div className="row">
           <div className="col pt-5">
             {this.state.currentlyScanning ?
-<<<<<<< Updated upstream
-            fetch('/feed/aligned')
-                      .then(res=>{return res.blob()})
-                      .then(blob=>{
-                        var img = URL.createObjectURL(blob);
-                        // Do whatever with the img
-                        document.getElementById('frame').setAttribute('src', img);
-
-                      })
-=======
               fetch('/feed/aligned')
               .then(res=>{return res.blob()})
               .then(blob=>{
@@ -167,8 +157,6 @@ class ScanScreen extends React.Component {
                 // Do whatever with the img
                 document.getElementById('frame').setAttribute('src', img);
               })
-
->>>>>>> Stashed changes
             :
             <div>
               <h5 className="text-secondary font-weight-light">Ready to 3D scan your object?</h5>
