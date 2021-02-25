@@ -147,10 +147,18 @@ class ScanScreen extends React.Component {
           }
           </div>
         </div>
+        <img id="frame" />
         <div className="row">
           <div className="col pt-5">
             {this.state.currentlyScanning ?
-            "png"
+            fetch('/feed/aligned')
+                      .then(res=>{return res.blob()})
+                      .then(blob=>{
+                        var img = URL.createObjectURL(blob);
+                        // Do whatever with the img
+                        document.getElementById('frame').setAttribute('src', img);
+
+                      })
             :
             <div>
               <h5 className="text-secondary font-weight-light">Ready to 3D scan your object?</h5>

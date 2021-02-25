@@ -1,14 +1,11 @@
 from time import sleep
 
 import pyrealsense2 as rs
-# Import Numpy for easy array manipulation
-import numpy as np
-# Import OpenCV for easy image rendering
 import cv2
 import os
-rgb_file = 'rgb_frame.jpg'
-aligned_file = 'aligned_frame.jpg'
-both_file = 'both_frame.jpg'
+rgb_file = 'rgb_frame.png'
+aligned_file = 'aligned_frame.png'
+both_file = 'both_frame.png'
 
 class CameraPip:
     def __init__(self):
@@ -18,9 +15,9 @@ class CameraPip:
         self.is_open_pip = False
         self.captured_frames_counter = 5
         cwd = os.getcwd()
-        self.align_path = os.path.join(cwd, 'aligned_frame.png')
-        self.rgb_path = os.path.join(cwd, 'rgb_frame.png')
-        self.both_path = os.path.join(cwd, 'both.png')
+        self.align_path = os.path.join(cwd, aligned_file)
+        self.rgb_path = os.path.join(cwd, rgb_file)
+        self.both_path = os.path.join(cwd, both_file)
 
 
     def open_pip(self):
@@ -122,9 +119,9 @@ class CameraPip:
             print("Image written to file-system : ", type(image))
 
             # save image
-            status = cv2.imwrite('both_frame.jpg', image)
-            status = cv2.imwrite('aligned_frame.jpg', bg_removed)
-            status = cv2.imwrite('rgb_frame.jpg', color_image)
+            status = cv2.imwrite('both_frame.png', image)
+            status = cv2.imwrite('aligned_frame.png', bg_removed)
+            status = cv2.imwrite('rgb_frame.png', color_image)
             print("Image written to file-system : ", status)
 
         except Exception:

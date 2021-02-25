@@ -149,8 +149,8 @@ def create_3d_model():
     mesh = mesh3(cropped_pcd)
     draw_point_cloud(mesh)
 
-
-create_3d_model()
+# print("what")
+# create_3d_model()
 
 # mesh = point_cloud_to_mesh(cropped_pcd)
 # mesh = point_cloud_to_mesh(cropped_pcd)
