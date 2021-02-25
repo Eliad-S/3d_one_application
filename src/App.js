@@ -5,6 +5,7 @@ import './bootstrap-4.3.1-dist/css/bootstrap.min.css';
 import scanScreenIcon from './images/camera_enhance-black-48dp.svg';
 import ModelsScreenIcon from './images/book-black-48dp.svg';
 import settingsScreenIcon from './images/settings-black-48dp.svg';
+import './fixed-left.css';
 
 
 
@@ -32,9 +33,7 @@ class Container extends React.Component {
     }
     if(this.state.current_screen === "my3DModels") {
       return(
-        <div className="p-3">
-          <h1 className="text-left">My 3D Models</h1>
-        </div>
+        <My3DModelsScreen />
       );
     }
     if(this.state.current_screen === "settings") {
@@ -49,13 +48,13 @@ class Container extends React.Component {
   render() {
     return(
       <div id="container" className="container-fluid">
-        <div className="row pt-3">
-          <div className="col">
+        <div className="row ">
+          <div className="">
           <div className="container-fluid">
             <Menu onChildClick={this.handleMenuButtonClick}/>
           </div>
           </div>
-          <div className="col-10 w-100 shadow-sm mb-3 p-3 bg-white rounded">
+          <div className="col-12 w-100">
             {this.renderScreens()}
           </div>
         </div>
@@ -106,11 +105,11 @@ class Menu extends React.Component {
 
   render() {
     return(
-    <div>
+    <div className="navbar navbar-expand-md navbar-dark fixed-left col card shadow pt-3">
       <h1 className="font-weight-light">3D One</h1>
       {this.renderMenuButton("Scan", scanScreenIcon, "scan")}
       {this.renderMenuButton("My 3D Models", ModelsScreenIcon, "my3DModels")}
-      <div>
+      <div className="">
         {this.renderMenuButton("Settings", settingsScreenIcon, "settings")}
       </div>
     </div>);
@@ -151,6 +150,7 @@ class ScanScreen extends React.Component {
         <div className="row">
           <div className="col pt-5">
             {this.state.currentlyScanning ?
+<<<<<<< Updated upstream
             fetch('/feed/aligned')
                       .then(res=>{return res.blob()})
                       .then(blob=>{
@@ -159,6 +159,16 @@ class ScanScreen extends React.Component {
                         document.getElementById('frame').setAttribute('src', img);
 
                       })
+=======
+              fetch('/feed/aligned')
+              .then(res=>{return res.blob()})
+              .then(blob=>{
+                var img = URL.createObjectURL(blob);
+                // Do whatever with the img
+                document.getElementById('frame').setAttribute('src', img);
+              })
+
+>>>>>>> Stashed changes
             :
             <div>
               <h5 className="text-secondary font-weight-light">Ready to 3D scan your object?</h5>
@@ -177,7 +187,71 @@ class ScanScreen extends React.Component {
 
 }
 
+class My3DModelsScreen extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      items: null
+    };
+  }
+    render() {
+      return(
+        <div id="container" className="container-fluid p-3">
+          <div class="row">
+            <div class="col">
+              <h1 className="text-left font-weight-light">My 3D Models</h1>
+                <div className="card m-4 p-4 shadow text-left ">
+                  <div className="row">
+                  <div className="col">
+                  
+                  <img className="float-left" width="250px" height="250px"/>
+                  <div className="pl-3 float-left">
+                  <h4 className="font-weight-light">Nike Shoe</h4>
+                  
+                  <ul class="list-group list-group-flush">
+                    <li class="list-group-item">Scanned at 25.02.2021</li>
+                    <li class="list-group-item">Size: 1.5GB</li>
+                    <li class="list-group-item">Share</li>
+                  </ul>
+                  </div>
+                  </div>
 
+
+                  </div>
+
+
+                  
+                </div>
+                <div className="card m-4 p-4 shadow"> 
+                </div>
+                <div className="card m-4 p-4 shadow"> 
+                </div>
+                <div className="card m-4 p-4 shadow"> 
+                </div>
+                <div className="card m-4 p-4 shadow"> 
+                </div>
+                <div className="card m-4 p-4 shadow"> 
+                </div>
+                <div className="card m-4 p-4 shadow"> 
+                </div>
+                <div className="card m-4 p-4 shadow"> 
+                </div>
+                <div className="card m-4 p-4 shadow"> 
+                </div>
+                <div className="card m-4 p-4 shadow"> 
+                </div>
+                <div className="card m-4 p-4 shadow"> 
+                </div>
+                <div className="card m-4 p-4 shadow"> 
+                </div>
+                <div className="card m-4 p-4 shadow"> 
+                </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+  }
 function App() {
   return (
     <div className="App">
