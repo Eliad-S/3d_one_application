@@ -5,6 +5,8 @@ import './bootstrap-4.3.1-dist/css/bootstrap.min.css';
 import scanScreenIcon from './images/camera_enhance-black-48dp.svg';
 import ModelsScreenIcon from './images/book-black-48dp.svg';
 import settingsScreenIcon from './images/settings-black-48dp.svg';
+import addIcon from './images/add-white-24dp.svg';
+import cancelIcon from './images/clear-white-24dp.svg';
 import './fixed-left.css';
 
 
@@ -49,10 +51,8 @@ class Container extends React.Component {
     return(
       <div id="container" className="container-fluid">
         <div className="row ">
-          <div className="">
           <div className="container-fluid">
             <Menu onChildClick={this.handleMenuButtonClick}/>
-          </div>
           </div>
           <div className="col-12 w-100">
             {this.renderScreens()}
@@ -83,36 +83,58 @@ class Menu extends React.Component {
 
   renderMenuButton(name, icon, id) {
     return(
-      <div className="row">
+      <>
         {this.state.pressed_button === id ? 
-        <button id={id} type="button" className="btn btn-primary btn-lg w-100 shadow-sm mb-3 rounded font-weight-light"
+        <button id={id} type="button" className="btn btn-primary btn-lg w-100 shadow-sm mb-3 rounded font-weight-light nav-item "
         onClick={this.buttonClick}>
           {name}
           <br />
           <img id={id} src={icon} alt={id}/>
         </button>
         :
-        <button id={id} type="button" className="btn btn-light btn-lg w-100 shadow-sm mb-3 bg-white rounded font-weight-light"
+        <button id={id} type="button" className="btn btn-light btn-lg w-100 shadow-sm mb-3 bg-white rounded font-weight-light nav-item "
         onClick={this.buttonClick}>
           {name}
           <br />
           <img id={id} src={icon} alt={id} />
         </button>}
-
-      </div>
+      </>
     );
   }
 
   render() {
     return(
-    <div className="navbar navbar-expand-md navbar-dark fixed-left col card shadow pt-3">
+    <nav className="navbar navbar-expand-md navbar-dark col card shadow pt-3 fixed-left">
+      <div class="collapse navbar-collapse" id="navbarsExampleDefault">
       <h1 className="font-weight-light">3D One</h1>
+      <ul class="navbar-nav">
       {this.renderMenuButton("Scan", scanScreenIcon, "scan")}
       {this.renderMenuButton("My 3D Models", ModelsScreenIcon, "my3DModels")}
       <div className="">
         {this.renderMenuButton("Settings", settingsScreenIcon, "settings")}
       </div>
-    </div>);
+{/*        <li class="nav-item">
+                <a class="nav-link" data-class="fixed-left">
+                    <i class="fa fa-arrow-left"></i>
+                    Fixed Left
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-class="fixed-top">
+                    <i class="fa fa-arrow-up"></i>
+                    Fixed Top
+                    <small>(original)</small>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-class="fixed-right">
+                    <i class="fa fa-arrow-right"></i>
+                    Fixed Right
+                </a>
+            </li> */}
+        </ul>
+    </div>
+    </nav>);
   }
 }
 
@@ -140,9 +162,15 @@ class ScanScreen extends React.Component {
           </div>
           <div className="float-right">
           {this.state.currentlyScanning ?
-          <button type="button" class="btn btn-danger" onClick={this.scanning}>Cancel Scan</button>
+          <button type="button" class="btn btn-danger" onClick={this.scanning}>
+            <img src={cancelIcon} />&nbsp;
+            Cancel Scan
+            </button>
           : 
-            <button type="button" class="btn btn-success" onClick={this.scanning}>Scan a New Object</button>
+            <button type="button" class="btn btn-success" onClick={this.scanning}>
+              <img src={addIcon} />&nbsp;
+              Scan a New Object
+              </button>
           }
           </div>
         </div>
@@ -150,13 +178,21 @@ class ScanScreen extends React.Component {
         <div className="row">
           <div className="col pt-5">
             {this.state.currentlyScanning ?
-              fetch('/feed/aligned')
-              .then(res=>{return res.blob()})
-              .then(blob=>{
-                var img = URL.createObjectURL(blob);
-                // Do whatever with the img
-                document.getElementById('frame').setAttribute('src', img);
-              })
+                // fetch('/feed/aligned')
+                // .then(res=>{return res.blob()})
+                // .then(blob=>{
+                //   var img = URL.createObjectURL(blob);
+                //   // Do whatever with the img
+                //   document.getElementById('frame').setAttribute('src', img);
+                // })
+            <>
+            <button type="button" class="btn btn-primary">Capture frame</button> or press 'E'
+            <br /><h3>1</h3>/4 frame were captured
+            <div class="progress w-25">
+              
+              <div class="progress-bar w-25" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            </>
             :
             <div>
               <h5 className="text-secondary font-weight-light">Ready to 3D scan your object?</h5>
