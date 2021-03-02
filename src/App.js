@@ -190,6 +190,7 @@ class ScanScreen extends React.Component {
             <>
             <button type="button" class="btn btn-primary">Capture frame</button> or press 'E'
             {<FramesPieChart />}
+            {<TodoPage />}
             </>
             :
             <div>
@@ -207,6 +208,25 @@ class ScanScreen extends React.Component {
     );
   }
 
+}
+
+export const TodoPage = () => {
+
+  const [todo, setTodo] = useState('')
+
+  useEffect(() => {
+      fetch('/feed/aligned').then(response => {
+        if (response.ok) {
+          return response.json()
+        }
+      }).then(data => setTodo(data))    
+  } ,[])
+
+  return(
+    <>
+      <img src={todo} />
+    </>
+  )
 }
 
 function FramesPieChart() {

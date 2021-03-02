@@ -37,14 +37,16 @@ def get_rgb():
 @app.route('/feed/aligned', methods=['GET'])
 def get_aligned():
     img_io = camera.get_align_path()
+
     send_file(img_io, mimetype='image/jpeg')
 
-#
-# @app.route('/capture_frame', methods=['POST'])
-# def get_feed():
-#     camera = CameraPip()
-#     camera.create_ply()
-#
+
+@app.route('/api', methods=['GET'])
+def index():
+    return {
+        'name': ['orange', 'apple']
+    }
+
 #
 # @app.route('/model_name', methods=['POST'])
 # def get_feed():
