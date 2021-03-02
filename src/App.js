@@ -153,6 +153,19 @@ class ScanScreen extends React.Component {
     this.setState({
       currentlyScanning: !this.state.currentlyScanning,
     });
+    if(this.state.currentlyScanning) {
+      console.log("hi");
+      fetch('/close').then(response => {
+        if(response.ok) {
+          console.log("close");
+          return response.json()
+        }
+      }).then(data =>
+        console.log(data)
+      )
+      .catch((error) => {
+          console.error('Error:', error);})
+    }
   }
 
   render() {
@@ -215,16 +228,30 @@ export const TodoPage = () => {
   const [todo, setTodo] = useState('')
 
   useEffect(() => {
-      fetch('/feed/aligned').then(response => {
-        if (response.ok) {
-          return response.json()
+    const interval = setInterval(() => {
+      console.log('This will run every second!');
+      fetch('/feed/bot').then(response => {
+        if(response.ok) {
+          return response.blob()
         }
-      }).then(data => setTodo(data))    
-  } ,[])
+      }).then(blob => {
+        var url = window.URL || window.webkitURL;
+        var src = url.createObjectURL(blob);
+        // setTodo("data:image/jpeg;base64," + blob)
+        setTodo(src)
+        console.log("ok")})
+        .catch((error) => {
+          console.error('Error:', error);
+        })
+    }, 200);
+        
+
+    return () => clearInterval(interval);
+  } ,[todo])
 
   return(
     <>
-      <img src={todo} />
+      <img src={todo} alt="camera feed" />
     </>
   )
 }

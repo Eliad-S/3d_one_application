@@ -49,8 +49,9 @@ class CameraPip:
         self.clipping_distance = clipping_distance_in_meters / depth_scale
 
     def close_pip(self):
-        self.pipeline.stop()
-        self.is_open_pip = False
+        if self.is_open_pip:
+            self.pipeline.stop()
+            self.is_open_pip = False
 
     def get_align_path(self):
         pil_img = self.capture_frame(aligned_option)
@@ -81,7 +82,9 @@ class CameraPip:
             self.close_pip()
 
     def capture_frame(self, option):
+        print("enter capture_frame")
         if not self.is_open_pip:
+            print("oprn pip")
             self.open_pip()
         try:
             align_to = rs.stream.color

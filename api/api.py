@@ -21,24 +21,34 @@ class User(db.Model):
 def get_current_time():
     return {'time': time.time()}
 
+@app.route('/close')
+def close_pip():
+    camera.close_pip()
+    return {'name': ['orange', 'apple']}
 
-@app.route('/feed/both', methods=['GET'])
+
+@app.route('/feed/bot', methods=['GET'])
 def get_both():
-    img_io = camera.get_both()
-    send_file(img_io, mimetype='image/jpeg')
+    print('get requesessssssssss')
+    img_io = camera.get_align_path()
+    print(type(img_io))
+    return send_file(img_io, mimetype='image/jpeg', as_attachment=False, cache_timeout=0)
 
 
 @app.route('/feed/rgb', methods=['GET'])
 def get_rgb():
+    print('get requesessssssssss')
     img_io = camera.get_rgb()
-    send_file(img_io, mimetype='image/jpeg')
+    print(img_io)
+    return send_file(img_io, mimetype='image/jpeg', as_attachment=False)
 
 
-@app.route('/feed/aligned', methods=['GET'])
+@app.route('/feed/aligne', methods=['GET'])
 def get_aligned():
+    print('get requesessssssssss')
     img_io = camera.get_align_path()
-
-    send_file(img_io, mimetype='image/jpeg')
+    print(type(img_io))
+    return send_file(img_io, mimetype='image/jpeg', as_attachment=False, cache_timeout=0)
 
 
 @app.route('/api', methods=['GET'])
