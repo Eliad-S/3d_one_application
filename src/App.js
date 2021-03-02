@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import './bootstrap-4.3.1-dist/css/bootstrap.min.css';
@@ -8,6 +8,8 @@ import settingsScreenIcon from './images/settings-black-48dp.svg';
 import addIcon from './images/add-white-24dp.svg';
 import cancelIcon from './images/clear-white-24dp.svg';
 import './fixed-left.css';
+import Chart from '../node_modules/chart.js/dist/Chart.js';
+
 
 
 
@@ -187,11 +189,7 @@ class ScanScreen extends React.Component {
                 // })
             <>
             <button type="button" class="btn btn-primary">Capture frame</button> or press 'E'
-            <br /><h3>1</h3>/4 frame were captured
-            <div class="progress w-25">
-              
-              <div class="progress-bar w-25" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"></div>
-            </div>
+            {<FramesPieChart />}
             </>
             :
             <div>
@@ -211,6 +209,44 @@ class ScanScreen extends React.Component {
 
 }
 
+function FramesPieChart() {
+  const canvas = useRef(null);
+  useEffect(() => {
+    const cfg = {
+      type: 'pie',
+      data: {
+        labels: [
+          'Captured',
+          'Remained',
+        ],
+        datasets: [{
+          label: 'Number of frames captured',
+          data: [3, 1],
+          backgroundColor: [
+            'rgb(2, 117, 216)',
+            'rgb(247, 247, 247)'
+          ],
+          hoverOffset: 4
+        }]
+      },
+      options: {
+        legend: {
+            display: false
+        },
+        tooltips: {
+          enabled: false
+     }
+    }
+    };
+    const chart = new Chart(canvas.current.getContext('2d'), cfg);
+    return () => chart.destroy();
+  });
+  return <div className="chartjs-wrapper w-25 h-25">
+                3/4 frames were captured
+    <canvas ref={canvas} className="chartjs"></canvas>
+    </div>;
+}
+
 class My3DModelsScreen extends React.Component {
   constructor(props) {
     super(props);
@@ -224,11 +260,11 @@ class My3DModelsScreen extends React.Component {
           <div class="row">
             <div class="col">
               <h1 className="text-left font-weight-light">My 3D Models</h1>
-                <div className="card m-4 p-4 shadow text-left ">
+                <div className=" m-4 p-4 border-bottom text-left ">
                   <div className="row">
                   <div className="col">
                   
-                  <img className="float-left" width="250px" height="250px"/>
+                  <img src="https://scontent.fsdv3-1.fna.fbcdn.net/v/t1.0-9/118465687_10224256568981851_3673965113741108503_o.jpg?_nc_cat=107&ccb=3&_nc_sid=09cbfe&_nc_ohc=JU6PXdock4EAX9cg2x9&_nc_ht=scontent.fsdv3-1.fna&oh=0f2976eabba01a193fb26b87ae0935b4&oe=6063AF91" className="rounded float-left" width="250px" height="250px"/>
                   <div className="pl-3 float-left">
                   <h4 className="font-weight-light">Nike Shoe</h4>
                   
