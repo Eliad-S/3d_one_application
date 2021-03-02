@@ -1,11 +1,14 @@
 from time import sleep
 
+import numpy as np
 import pyrealsense2 as rs
+from PIL import Image
 import cv2
-import os
-rgb_file = 'rgb_frame.png'
-aligned_file = 'aligned_frame.png'
-both_file = 'both_frame.png'
+from utils import serve_pil_image
+rgb_option = 1
+aligned_option = 2
+both_option = 3
+
 
 class CameraPip:
     def __init__(self):
@@ -14,10 +17,10 @@ class CameraPip:
         self.config = rs.config()
         self.is_open_pip = False
         self.captured_frames_counter = 5
-        cwd = os.getcwd()
-        self.align_path = os.path.join(cwd, aligned_file)
-        self.rgb_path = os.path.join(cwd, rgb_file)
-        self.both_path = os.path.join(cwd, both_file)
+        # cwd = os.getcwd()
+        # self.align_path = os.path.join(cwd, aligned_file)
+        # self.rgb_path = os.path.join(cwd, rgb_file)
+        # self.both_path = os.path.join(cwd, both_file)
 
 
     def open_pip(self):
@@ -50,18 +53,18 @@ class CameraPip:
         self.is_open_pip = False
 
     def get_align_path(self):
-        self.capture_frame()
+        pil_img = self.capture_frame(aligned_option)
         # create relevent img and return it
-        return aligned_file, self.align_path
+        return serve_pil_image(pil_img)
 
     def get_both(self):
-        self.capture_frame()
+        pil_img = self.capture_frame(both_option)
         # create relevent img and return it
-        return both_file, self.both_path
+        return serve_pil_image(pil_img)
 
     def get_rgb(self):
-        self.capture_frame()
-        return rgb_file, self.rgb_path
+        pil_img = self.capture_frame(rgb_option)
+        return serve_pil_image(pil_img)
 
     def create_ply(self):
         try:
@@ -77,7 +80,7 @@ class CameraPip:
         except Exception:
             self.close_pip()
 
-    def capture_frame(self):
+    def capture_frame(self, option):
         if not self.is_open_pip:
             self.open_pip()
         try:
@@ -119,10 +122,21 @@ class CameraPip:
             print("Image written to file-system : ", type(image))
 
             # save image
-            status = cv2.imwrite('both_frame.png', image)
-            status = cv2.imwrite('aligned_frame.png', bg_removed)
-            status = cv2.imwrite('rgb_frame.png', color_image)
-            print("Image written to file-system : ", status)
+
+            if option == both_option:
+                both_frame = Image.fromarray(image)
+                return both_frame
+            elif option == aligned_option:
+                aligned_frame = Image.fromarray(bg_removed)
+                return aligned_frame
+            else:
+                rgb_frame = Image.fromarray(color_image)
+                return rgb_frame
+
+            # status = cv2.imwrite('both_frame.png', image)
+            # status = cv2.imwrite('aligned_frame.png', bg_removed)
+            # status = cv2.imwrite('rgb_frame.png', color_image)
+            # print("Image written to file-system : ", status)
 
         except Exception:
             self.close_pip()

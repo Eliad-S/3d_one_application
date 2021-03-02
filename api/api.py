@@ -1,66 +1,43 @@
 import time
-
 from flask import Flask, send_file, send_from_directory
 from camera_utils import CameraPip
-
+from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///dbdir/test.db'
+db = SQLAlchemy(app)
+# implement singelton
+camera = CameraPip()
+
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+
+    def __repr__(self):
+        return '<User %r>' % self.username
 
 @app.route('/time')
 def get_current_time():
     return {'time': time.time()}
 
+
 @app.route('/feed/both', methods=['GET'])
 def get_both():
-    camera = CameraPip()
-    name_file, path = camera.get_both()
-
-    try:
-        return send_from_directory(
-            path,
-            name_file,
-            as_attachment=True,
-            attachment_filename='test.png',
-            mimetype='image/png'
-        )
-
-    except Exception as e:
-        return str(e)
+    img_io = camera.get_both()
+    send_file(img_io, mimetype='image/jpeg')
 
 
 @app.route('/feed/rgb', methods=['GET'])
 def get_rgb():
-    camera = CameraPip()
-    name_file, path = camera.get_rgb()
-
-    try:
-        return send_from_directory(
-            path,
-            name_file,
-            as_attachment=True,
-            attachment_filename='test.png',
-            mimetype='image/png'
-        )
-
-    except Exception as e:
-        return str(e)
+    img_io = camera.get_rgb()
+    send_file(img_io, mimetype='image/jpeg')
 
 
 @app.route('/feed/aligned', methods=['GET'])
 def get_aligned():
-    camera = CameraPip()
-    name_file, path = camera.get_align_path()
-
-    try:
-        return send_from_directory(
-            path,
-            name_file,
-            as_attachment=True,
-            attachment_filename='test.png',
-            mimetype='image/png'
-        )
-
-    except Exception as e:
-        return str(e)
+    img_io = camera.get_align_path()
+    send_file(img_io, mimetype='image/jpeg')
 
 #
 # @app.route('/capture_frame', methods=['POST'])
