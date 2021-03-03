@@ -26,15 +26,16 @@ class Container extends React.Component {
   }
 
   componentDidMount() {
+    console.log("settingsss")
     fetch('/settings').then(response => {
       if(response.ok) {
-        console.log("settings recieved");
         return response.json()
       }
-    }).then(data =>
+    }).then(data => {
+      
       this.setState({
         settings: data,
-      })
+      }, () => console.log('current: ' + this.state.settings.number_of_frames))}
     )
     .catch((error) => {
         console.error('Error:', error);})
@@ -236,7 +237,7 @@ async componentDidMount() {
   
   restartScan() {
     fetch('/restart', {
-      method: 'POST'
+      method: 'GET'
     }).then(response => {
       if(response.ok) {
         console.log("restart");
@@ -251,6 +252,9 @@ async componentDidMount() {
         console.error('Error:', error);})
   }
 
+  componentWillReceiveProps(settings) {
+    this.setState({ settings: settings });  
+  }
   render() {
     return(
       <div id="container" className="container-fluid p-3">
@@ -258,6 +262,7 @@ async componentDidMount() {
           <div class="col">
             <h1 className="text-left font-weight-light">Scan</h1>
           </div>
+          {this.state.settings ? 'gooddd' : 'nottttt'}
           <div className="float-right">
           {this.state.currentlyScanning ?
           <>
@@ -291,9 +296,10 @@ async componentDidMount() {
                 // })
             <>
             <button type="button" class="btn btn-primary" onClick={this.capture}>Capture Frame</button> or press 'E'
-            <FramesPieChart numberOfFrames="7" numberOfFramesCaptured={this.state.numberOfFramesCaptured} />
+            <FramesPieChart numberOfFrames={this.state.settings.settings.number_of_frames} numberOfFramesCaptured={this.state.numberOfFramesCaptured} />
+            {console.log(this.state.settings.settings.number_of_frames)}
             {<TodoPage />}
-            {this.state.numberOfFramesCaptured === 7 ? 
+            {this.state.numberOfFramesCaptured === this.state.settings.settings.number_of_frames ? 
 
             <div class="modal-dialog" role="document">
               <div class="modal-content">

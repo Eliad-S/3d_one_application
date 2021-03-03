@@ -16,7 +16,7 @@ class CameraPipe:
         self.pc = rs.pointcloud()
         self.config = rs.config()
         self.is_open_pip = False
-        self.captured_frames_counter = 0
+        self.captured_frames_counter = 1
 
     def open_pipe(self):
         if self.is_open_pip:
@@ -78,7 +78,7 @@ class CameraPipe:
             print(error)
 
     def reset_captures(self):
-        self.captured_frames_counter = 0
+        self.captured_frames_counter = 1
 
     # create a 3d model consisting of the captured frames
     # check if there is enough frames

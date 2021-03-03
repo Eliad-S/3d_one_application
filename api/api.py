@@ -25,6 +25,7 @@ def get_current_time():
 def close_pipe():
     try:
         camera.close_pipe()
+        camera.reset_captures()
         return {"succeed closing pipe": 200}
     except Exception as error:
         return jsonify({'error': error})
@@ -91,7 +92,7 @@ def reset():
     return {"succeed closing pipe": 200}
 
 
-@app.route('/setting', methods=['GET'])
+@app.route('/settings', methods=['GET'])
 def get_setting():
     try:
         data = setting_manager.get_json()
