@@ -1,21 +1,18 @@
+import json
 import time
-from flask import Flask, send_file, send_from_directory
+from flask import Flask, send_file, send_from_directory, jsonify
 from camera_utils import CameraPip
-from flask_sqlalchemy import SQLAlchemy
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///dbdir/test.db'
-db = SQLAlchemy(app)
-# implement singelton
+from db_manager import db_session
+import db_manager
 camera = CameraPip()
 
-eliads = 5
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
+app = Flask(__name__)
 
-    def __repr__(self):
-        return '<User %r>' % self.username
+
+@app.teardown_appcontext
+def shutdown_session(exception=None):
+    db_session.remove()
+
 
 @app.route('/time')
 def get_current_time():
@@ -57,25 +54,8 @@ def index():
         'name': ['orange', 'apple']
     }
 
-#
-# @app.route('/model_name', methods=['POST'])
-# def get_feed():
-#     # create file in path in setting
-#     pass
-#
-#
-# @app.route('/feed', methods=['GET'])
-# def get_feed():
-#     pass
-#
-#
-# #####settingsssss
-# # default 4
-# @app.route('/settings/number_of_frames', methods=['GET,POST'])
-# def get_feed():
-#     pass
-#
-#
-# @app.route('/settings/directory/', methods=['GET', 'POST'])
-# def get_feed():
-#     pass
+
+@app.route('/models', methods=['GET'])
+def get_models():
+    # print(db_manager.get_all())
+    return jsonify(json_list=[i.serialize for i in db_manager.get_all()])

@@ -1,13 +1,30 @@
 from time import sleep
-
+from datetime import datetime
 import numpy as np
 import pyrealsense2 as rs
 from PIL import Image
 import cv2
 from utils import serve_pil_image
+from threading import Thread, Lock
+time = datetime.now()
+mutex = Lock()
+
 rgb_option = 1
 aligned_option = 2
 both_option = 3
+
+
+def check_timeout():
+    while True:
+        sleep(3)
+        now = datetime.now()
+        mutex.acquire()
+        try:
+            diff = (now - time).total_seconds()
+            print(diff)
+            print('Do some stuff')
+        finally:
+            mutex.release()
 
 
 class CameraPip:
@@ -86,6 +103,9 @@ class CameraPip:
         if not self.is_open_pip:
             print("oprn pip")
             self.open_pip()
+            t = Thread(target=check_timeout)
+            t.start()
+        mutex.acquire()
         try:
             align_to = rs.stream.color
             align = rs.align(align_to)
@@ -143,6 +163,11 @@ class CameraPip:
 
         except Exception:
             self.close_pip()
+
+        finally:
+            global time
+            time = datetime.now()
+            mutex.release()
 
 
 
