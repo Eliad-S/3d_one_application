@@ -7,6 +7,7 @@ import ModelsScreenIcon from './images/book-black-48dp.svg';
 import settingsScreenIcon from './images/settings-black-48dp.svg';
 import addIcon from './images/add-white-24dp.svg';
 import cancelIcon from './images/clear-white-24dp.svg';
+import loadingGIF from './images/loading.gif';
 import './fixed-left.css';
 import Chart from '../node_modules/chart.js/dist/Chart.js';
 
@@ -145,9 +146,30 @@ class ScanScreen extends React.Component {
     super(props);
     this.state = {
       currentlyScanning: false,
+      connectedToServer: false,
     };
     this.scanning = this.scanning.bind(this);
   }
+
+componentDidMount() {
+  async function connect() {
+    if(!this.state.connectedToServer) {
+      console.log("connecting to server");
+      await fetch('/open').then(response => {
+        if(response.ok) {
+          console.log("open");
+          return response.json()
+        }
+      }).then(data =>
+        this.setState({
+          connectedToServer: true,
+        })
+      )
+      .catch((error) => {
+          console.error('Error:', error);})
+    }
+  }
+}
 
   scanning() {
     this.setState({
@@ -192,7 +214,7 @@ class ScanScreen extends React.Component {
         <img id="frame" />
         <div className="row">
           <div className="col pt-5">
-            {this.state.currentlyScanning ?
+            {this.state.currentlyScanning && this.state.connectedToServer ?
                 // fetch('/feed/aligned')
                 // .then(res=>{return res.blob()})
                 // .then(blob=>{
@@ -202,16 +224,22 @@ class ScanScreen extends React.Component {
                 // })
             <>
             <button type="button" class="btn btn-primary">Capture frame</button> or press 'E'
-            {<FramesPieChart />}
-            {<TodoPage />}
+              {<FramesPieChart />}
+              {<TodoPage />}
+            </> : ''}
+            {this.state.currentlyScanning && !this.state.connectedToServer ?
+            <>
+            <h4>waiting for server</h4>
+            <img src={loadingGIF} alt="Loading..."/>
             </>
-            :
+            : ''}
+            {!this.state.currentlyScanning ? 
             <div>
               <h5 className="text-secondary font-weight-light">Ready to 3D scan your object?</h5>
               <h6 className="text-secondary font-weight-light">Click "Scan a New Object"</h6>
               <img src={scanScreenIcon} />
             </div>
-            }
+            : ''}
           </div>
         </div>
       
@@ -229,8 +257,9 @@ export const TodoPage = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
+      async function fetchFrames() {
       console.log('This will run every second!');
-      fetch('/feed/bot').then(response => {
+      await fetch('/feed/bot').then(response => {
         if(response.ok) {
           return response.blob()
         }
@@ -243,9 +272,9 @@ export const TodoPage = () => {
         .catch((error) => {
           console.error('Error:', error);
         })
-    }, 200);
-        
+      }}, 200);
 
+       
     return () => clearInterval(interval);
   } ,[todo])
 
@@ -298,61 +327,58 @@ class My3DModelsScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      items: null
+      models: [1,1,1,1],
     };
+  }
+
+  componentDidMount() {
+    async function fetchModels() {
+      if(!this.state.connectedToServer) {
+        console.log("getting models");
+        await fetch('/models').then(response => {
+          if(response.ok) {
+            console.log("models ok");
+            return response.json()
+          }
+        }).then(data =>
+          this.setState({
+            models: data,
+          })
+        )
+        .catch((error) => {
+            console.error('Error:', error);})
+      }
+    }
   }
     render() {
       return(
         <div id="container" className="container-fluid p-3">
           <div class="row">
             <div class="col">
-              <h1 className="text-left font-weight-light">My 3D Models</h1>
-                <div className=" m-4 p-4 border-bottom text-left ">
+            <h1 className="text-left font-weight-light">My 3D Models</h1>
+              {this.state.models.map(model => {
+                return(
+                  <div className=" m-4 p-4 border-bottom text-left ">
                   <div className="row">
                   <div className="col">
                   
-                  <img src="https://scontent.fsdv3-1.fna.fbcdn.net/v/t1.0-9/118465687_10224256568981851_3673965113741108503_o.jpg?_nc_cat=107&ccb=3&_nc_sid=09cbfe&_nc_ohc=JU6PXdock4EAX9cg2x9&_nc_ht=scontent.fsdv3-1.fna&oh=0f2976eabba01a193fb26b87ae0935b4&oe=6063AF91" className="rounded float-left" width="250px" height="250px"/>
+                  <img src={model.img_file} className="rounded float-left" width="250px" height="250px"/>
                   <div className="pl-3 float-left">
-                  <h4 className="font-weight-light">Nike Shoe</h4>
+                  <h4 className="font-weight-light">{model.name}</h4>
                   
                   <ul class="list-group list-group-flush">
-                    <li class="list-group-item">Scanned at 25.02.2021</li>
+                    <li class="list-group-item"><button class="btn btn-primary">View 3D Model</button></li>
+                    <li class="list-group-item">Scanned at {model.creationDate}</li>
                     <li class="list-group-item">Size: 1.5GB</li>
                     <li class="list-group-item">Share</li>
                   </ul>
                   </div>
                   </div>
-
-
                   </div>
-
-
-                  
                 </div>
-                <div className="card m-4 p-4 shadow"> 
-                </div>
-                <div className="card m-4 p-4 shadow"> 
-                </div>
-                <div className="card m-4 p-4 shadow"> 
-                </div>
-                <div className="card m-4 p-4 shadow"> 
-                </div>
-                <div className="card m-4 p-4 shadow"> 
-                </div>
-                <div className="card m-4 p-4 shadow"> 
-                </div>
-                <div className="card m-4 p-4 shadow"> 
-                </div>
-                <div className="card m-4 p-4 shadow"> 
-                </div>
-                <div className="card m-4 p-4 shadow"> 
-                </div>
-                <div className="card m-4 p-4 shadow"> 
-                </div>
-                <div className="card m-4 p-4 shadow"> 
-                </div>
-                <div className="card m-4 p-4 shadow"> 
-                </div>
+                );
+              }
+              )}
             </div>
           </div>
         </div>
