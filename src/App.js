@@ -273,8 +273,8 @@ export const TodoPage = () => {
           console.error('Error:', error);
         })
       }}, 200);
-        
 
+       
     return () => clearInterval(interval);
   } ,[todo])
 
