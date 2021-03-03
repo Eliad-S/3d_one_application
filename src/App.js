@@ -7,10 +7,10 @@ import ModelsScreenIcon from './images/book-black-48dp.svg';
 import settingsScreenIcon from './images/settings-black-48dp.svg';
 import addIcon from './images/add-white-24dp.svg';
 import cancelIcon from './images/clear-white-24dp.svg';
+import restartIcon from './images/restart_alt-white-24dp.svg'
 import loadingGIF from './images/loading.gif';
 import './fixed-left.css';
 import Chart from '../node_modules/chart.js/dist/Chart.js';
-
 
 
 
@@ -21,8 +21,25 @@ class Container extends React.Component {
     this.renderScreens = this.renderScreens.bind(this);
     this.state = {
       current_screen: "scan",
+      settings: null,
     };
   }
+
+  componentDidMount() {
+    fetch('/settings').then(response => {
+      if(response.ok) {
+        console.log("settings recieved");
+        return response.json()
+      }
+    }).then(data =>
+      this.setState({
+        settings: data,
+      })
+    )
+    .catch((error) => {
+        console.error('Error:', error);})
+  }
+  
 
   handleMenuButtonClick(clickedButton) {
     this.setState({
@@ -33,7 +50,7 @@ class Container extends React.Component {
   renderScreens() {
     if(this.state.current_screen === "scan") {
       return(
-        <ScanScreen />
+        <ScanScreen settings={this.state.settings} />
       );
     }
     if(this.state.current_screen === "my3DModels") {
@@ -147,16 +164,19 @@ class ScanScreen extends React.Component {
     this.state = {
       currentlyScanning: false,
       connectedToServer: false,
+      settings: props.settings,
+      numberOfFramesCaptured: 0,
     };
     this.scanning = this.scanning.bind(this);
-    // this.componentDidMount = this.componentDidMount.bind(this)
+    this.capture = this.capture.bind(this);
+    this.restartScan = this.restartScan.bind(this);
   }
 
 async componentDidMount() {
   console.log("connected: " + this.state.connectedToServer);
   console.log('scanning: ' + this.state.currentlyScanning);
   if(this.state.currentlyScanning && !this.state.connectedToServer) {
-    console.log("connecting to server");
+    console.log("Connecting to Server");
     await fetch('/open').then(response => {
       if(response.ok) {
         console.log("open");
@@ -191,9 +211,44 @@ async componentDidMount() {
     let temp = !this.state.currentlyScanning;
     this.setState({
       currentlyScanning: temp,
+      numberOfFramesCaptured: 0,
     }, () => this.componentDidMount());
 
 
+  }
+
+  capture() {
+    fetch('/capture', {
+      method: 'GET'
+    }).then(response => {
+      if(response.ok) {
+        console.log("capture");
+        return response.json()
+      }
+    }).then(data =>
+      this.setState({
+        numberOfFramesCaptured: this.state.numberOfFramesCaptured + 1,
+      })
+    )
+    .catch((error) => {
+        console.error('Error:', error);}) 
+  }
+  
+  restartScan() {
+    fetch('/restart', {
+      method: 'POST'
+    }).then(response => {
+      if(response.ok) {
+        console.log("restart");
+        return response.json()
+      }
+    }).then(data =>
+      this.setState({
+        numberOfFramesCaptured: 0,
+      })
+    )
+    .catch((error) => {
+        console.error('Error:', error);})
   }
 
   render() {
@@ -205,10 +260,16 @@ async componentDidMount() {
           </div>
           <div className="float-right">
           {this.state.currentlyScanning ?
-          <button type="button" class="btn btn-danger" onClick={this.scanning}>
+          <>
+            <button type="button" class="btn btn-dark" onClick={this.restartScan}>
+            <img src={restartIcon} />&nbsp;
+            Restart Scan
+            </button> &nbsp;
+            <button type="button" class="btn btn-danger" onClick={this.scanning}>
             <img src={cancelIcon} />&nbsp;
             Cancel Scan
             </button>
+          </>
           : 
             <button type="button" class="btn btn-success" onClick={this.scanning}>
               <img src={addIcon} />&nbsp;
@@ -229,9 +290,31 @@ async componentDidMount() {
                 //   document.getElementById('frame').setAttribute('src', img);
                 // })
             <>
-            <button type="button" class="btn btn-primary">Capture frame</button> or press 'E'
-              {<FramesPieChart />}
-              {<TodoPage />}
+            <button type="button" class="btn btn-primary" onClick={this.capture}>Capture Frame</button> or press 'E'
+            <FramesPieChart numberOfFrames="7" numberOfFramesCaptured={this.state.numberOfFramesCaptured} />
+            {<TodoPage />}
+            {this.state.numberOfFramesCaptured === 7 ? 
+
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">Modal title</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <p>Modal body text goes here.</p>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-primary">Save changes</button>
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+
+            : ''
+          }
             </> : ''}
             {this.state.currentlyScanning && !this.state.connectedToServer ?
             <>
@@ -248,13 +331,9 @@ async componentDidMount() {
             : ''}
           </div>
         </div>
-      
-
-      
     </div>
     );
   }
-
 }
 
 export const TodoPage = () => {
@@ -277,7 +356,7 @@ export const TodoPage = () => {
         .catch((error) => {
           console.error('Error:', error);
         })
-      }, 40);
+      }, 500);
 
        
     return () => clearInterval(interval);
@@ -290,7 +369,7 @@ export const TodoPage = () => {
   )
 }
 
-function FramesPieChart() {
+function FramesPieChart({numberOfFrames, numberOfFramesCaptured}) {
   const canvas = useRef(null);
   useEffect(() => {
     const cfg = {
@@ -302,7 +381,7 @@ function FramesPieChart() {
         ],
         datasets: [{
           label: 'Number of frames captured',
-          data: [3, 1],
+          data: [numberOfFramesCaptured, (numberOfFrames - numberOfFramesCaptured)],
           backgroundColor: [
             'rgb(2, 117, 216)',
             'rgb(247, 247, 247)'
@@ -323,7 +402,7 @@ function FramesPieChart() {
     return () => chart.destroy();
   });
   return <div className="chartjs-wrapper w-25 h-25">
-                3/4 frames were captured
+                {numberOfFramesCaptured}/{numberOfFrames} frames were captured
     <canvas ref={canvas} className="chartjs"></canvas>
     </div>;
 }
