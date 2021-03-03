@@ -1,30 +1,13 @@
-from time import sleep
 from datetime import datetime
 import numpy as np
 import pyrealsense2 as rs
 from PIL import Image
 import cv2
-from utils import serve_pil_image
-from threading import Thread, Lock
+from utils import serve_pil_image, create_3d_model
 time = datetime.now()
-mutex = Lock()
-
 rgb_option = 1
 aligned_option = 2
 both_option = 3
-
-
-def check_timeout():
-    while True:
-        sleep(3)
-        now = datetime.now()
-        mutex.acquire()
-        try:
-            diff = (now - time).total_seconds()
-            print(diff)
-            print('Do some stuff')
-        finally:
-            mutex.release()
 
 
 class CameraPipe:
@@ -33,15 +16,13 @@ class CameraPipe:
         self.pc = rs.pointcloud()
         self.config = rs.config()
         self.is_open_pip = False
-        self.captured_frames_counter = 5
+        self.captured_frames_counter = 0
 
     def open_pipe(self):
         if self.is_open_pip:
             return
         self.is_open_pip = True
         print("open pip")
-        self.open_pipe()
-        self.captured_frames_counter = 0
         config = rs.config()
         config.enable_stream(rs.stream.depth, 1024, 768, rs.format.z16, 30)
         config.enable_stream(rs.stream.color, 1280, 720, rs.format.rgb8, 30)
@@ -70,41 +51,48 @@ class CameraPipe:
             self.is_open_pip = False
 
     def get_align_path(self):
-        pil_img = self.capture_frame(aligned_option)
+        pil_img = self.get_frame(aligned_option)
         # create relevent img and return it
         return serve_pil_image(pil_img)
 
     def get_both(self):
-        pil_img = self.capture_frame(both_option)
+        pil_img = self.get_frame(both_option)
         # create relevent img and return it
         return serve_pil_image(pil_img)
 
     def get_rgb(self):
-        pil_img = self.capture_frame(rgb_option)
+        pil_img = self.get_frame(rgb_option)
         return serve_pil_image(pil_img)
 
-    def create_ply(self):
+    def capture_frame(self):
         try:
             print(f"Saving to {self.captured_frames_counter}.ply...")
-
             # BGR to RGB
             # Apply the processing block to the frameset which contains the depth frame and the texture
             self.points.export_to_ply(f"{self.captured_frames_counter}.ply", self.color_frame)
-
             # ply.process(colorized)
+            self.captured_frames_counter += 1
             print("Done")
-
-        except Exception:
+        except Exception as error:
             self.close_pipe()
+            print(error)
 
-    def capture_frame(self, option):
+    def reset_captures(self):
+        self.captured_frames_counter = 0
+
+    # create a 3d model consisting of the captured frames
+    # check if there is enough frames
+    def create_model(self):
+        mesh = create_3d_model()
+        return mesh
+
+    def get_frame(self, option):
         print("enter capture_frame")
         if not self.is_open_pip:
             print("pipe is closed, open first")
             return None
             # t = Thread(target=check_timeout)
             # t.start()
-        mutex.acquire()
         try:
             align_to = rs.stream.color
             align = rs.align(align_to)
@@ -162,11 +150,6 @@ class CameraPipe:
 
         except Exception:
             self.close_pipe()
-
-        finally:
-            global time
-            time = datetime.now()
-            mutex.release()
 
 
 
