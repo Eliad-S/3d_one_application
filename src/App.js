@@ -149,45 +149,51 @@ class ScanScreen extends React.Component {
       connectedToServer: false,
     };
     this.scanning = this.scanning.bind(this);
+    // this.componentDidMount = this.componentDidMount.bind(this)
   }
 
-componentDidMount() {
-  async function connect() {
-    if(!this.state.connectedToServer) {
-      console.log("connecting to server");
-      await fetch('/open').then(response => {
-        if(response.ok) {
-          console.log("open");
-          return response.json()
-        }
-      }).then(data =>
-        this.setState({
-          connectedToServer: true,
-        })
-      )
-      .catch((error) => {
-          console.error('Error:', error);})
-    }
+async componentDidMount() {
+  console.log("connected: " + this.state.connectedToServer);
+  console.log('scanning: ' + this.state.currentlyScanning);
+  if(this.state.currentlyScanning && !this.state.connectedToServer) {
+    console.log("connecting to server");
+    await fetch('/open').then(response => {
+      if(response.ok) {
+        console.log("open");
+        return response.json()
+      }
+    }).then(data =>
+      this.setState({
+        connectedToServer: true,
+      })
+    )
+    .catch((error) => {
+        console.error('Error:', error);})
+  }
+
+  if (!this.state.currentlyScanning && this.state.connectedToServer) {
+    fetch('/close').then(response => {
+      if(response.ok) {
+        console.log("close");
+        return response.json()
+      }
+    }).then(data =>
+      this.setState({
+        connectedToServer: false,
+      })
+    )
+    .catch((error) => {
+        console.error('Error:', error);})
   }
 }
 
   scanning() {
+    let temp = !this.state.currentlyScanning;
     this.setState({
-      currentlyScanning: !this.state.currentlyScanning,
-    });
-    if(this.state.currentlyScanning) {
-      console.log("hi");
-      fetch('/close').then(response => {
-        if(response.ok) {
-          console.log("close");
-          return response.json()
-        }
-      }).then(data =>
-        console.log(data)
-      )
-      .catch((error) => {
-          console.error('Error:', error);})
-    }
+      currentlyScanning: temp,
+    }, () => this.componentDidMount());
+
+
   }
 
   render() {
@@ -252,14 +258,13 @@ componentDidMount() {
 }
 
 export const TodoPage = () => {
-
+  console.log('This will run every second!');
   const [todo, setTodo] = useState('')
 
   useEffect(() => {
     const interval = setInterval(() => {
-      async function fetchFrames() {
       console.log('This will run every second!');
-      await fetch('/feed/bot').then(response => {
+       fetch('/feed/aligne').then(response => {
         if(response.ok) {
           return response.blob()
         }
@@ -272,7 +277,7 @@ export const TodoPage = () => {
         .catch((error) => {
           console.error('Error:', error);
         })
-      }}, 200);
+      }, 40);
 
        
     return () => clearInterval(interval);
@@ -332,23 +337,19 @@ class My3DModelsScreen extends React.Component {
   }
 
   componentDidMount() {
-    async function fetchModels() {
-      if(!this.state.connectedToServer) {
-        console.log("getting models");
-        await fetch('/models').then(response => {
-          if(response.ok) {
-            console.log("models ok");
-            return response.json()
-          }
-        }).then(data =>
-          this.setState({
-            models: data,
-          })
-        )
-        .catch((error) => {
-            console.error('Error:', error);})
+    console.log("getting models");
+      fetch('/models').then(response => {
+      if(response.ok) {
+        console.log("models ok");
+        return response.json()
       }
-    }
+    }).then(data =>
+      this.setState({
+        models: data,
+      })
+    )
+    .catch((error) => {
+        console.error('Error:', error);})
   }
     render() {
       return(
@@ -368,8 +369,8 @@ class My3DModelsScreen extends React.Component {
                   
                   <ul class="list-group list-group-flush">
                     <li class="list-group-item"><button class="btn btn-primary">View 3D Model</button></li>
-                    <li class="list-group-item">Scanned at {model.creationDate}</li>
-                    <li class="list-group-item">Size: 1.5GB</li>
+                    <li class="list-group-item">Scanned at {model.creation_date}</li>
+                    <li class="list-group-item">Size: {model.size}</li>
                     <li class="list-group-item">Share</li>
                   </ul>
                   </div>

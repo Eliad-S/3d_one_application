@@ -1,10 +1,12 @@
 import json
 import time
+from os import abort
+
 from flask import Flask, send_file, send_from_directory, jsonify
-from camera_utils import CameraPip
+from camera_utils import CameraPipe
 from db_manager import db_session
 import db_manager
-camera = CameraPip()
+camera = CameraPipe()
 
 app = Flask(__name__)
 
@@ -19,12 +21,17 @@ def get_current_time():
     return {'time': time.time()}
 
 @app.route('/close')
-def close_pip():
-    camera.close_pip()
+def close_pipe():
+    camera.close_pipe()
     return {'name': ['orange', 'apple']}
 
+@app.route('/open')
+def open_pipe():
+    camera.open_pipe()
+    return {'ok': ['orange', 'apple']}
 
-@app.route('/feed/bot', methods=['GET'])
+
+@app.route('/feed/both', methods=['GET'])
 def get_both():
     print('get requesessssssssss')
     img_io = camera.get_align_path()
@@ -58,4 +65,4 @@ def index():
 @app.route('/models', methods=['GET'])
 def get_models():
     # print(db_manager.get_all())
-    return jsonify(json_list=[i.serialize for i in db_manager.get_all()])
+    return jsonify([i.serialize for i in db_manager.get_all()])

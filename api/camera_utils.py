@@ -27,22 +27,21 @@ def check_timeout():
             mutex.release()
 
 
-class CameraPip:
+class CameraPipe:
     def __init__(self):
         self.pipeline = rs.pipeline()
         self.pc = rs.pointcloud()
         self.config = rs.config()
         self.is_open_pip = False
         self.captured_frames_counter = 5
-        # cwd = os.getcwd()
-        # self.align_path = os.path.join(cwd, aligned_file)
-        # self.rgb_path = os.path.join(cwd, rgb_file)
-        # self.both_path = os.path.join(cwd, both_file)
 
-
-    def open_pip(self):
-        self.captured_frames_counter = 0
+    def open_pipe(self):
+        if self.is_open_pip:
+            return
         self.is_open_pip = True
+        print("open pip")
+        self.open_pipe()
+        self.captured_frames_counter = 0
         config = rs.config()
         config.enable_stream(rs.stream.depth, 1024, 768, rs.format.z16, 30)
         config.enable_stream(rs.stream.color, 1280, 720, rs.format.rgb8, 30)
@@ -65,7 +64,7 @@ class CameraPip:
         clipping_distance_in_meters = 1  # 1 meter
         self.clipping_distance = clipping_distance_in_meters / depth_scale
 
-    def close_pip(self):
+    def close_pipe(self):
         if self.is_open_pip:
             self.pipeline.stop()
             self.is_open_pip = False
@@ -96,15 +95,15 @@ class CameraPip:
             print("Done")
 
         except Exception:
-            self.close_pip()
+            self.close_pipe()
 
     def capture_frame(self, option):
         print("enter capture_frame")
         if not self.is_open_pip:
-            print("oprn pip")
-            self.open_pip()
-            t = Thread(target=check_timeout)
-            t.start()
+            print("pipe is closed, open first")
+            return None
+            # t = Thread(target=check_timeout)
+            # t.start()
         mutex.acquire()
         try:
             align_to = rs.stream.color
@@ -162,7 +161,7 @@ class CameraPip:
             # print("Image written to file-system : ", status)
 
         except Exception:
-            self.close_pip()
+            self.close_pipe()
 
         finally:
             global time
