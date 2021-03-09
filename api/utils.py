@@ -1,10 +1,11 @@
 import numpy as np
+import open3d
 from open3d.cpu.pybind.io import read_point_cloud
 from open3d.cpu.pybind.visualization import draw_geometries
 import open3d as o3d
 import copy
 import trimesh
-from io import  BytesIO
+from io import BytesIO
 
 NUMBER_OF_CAPTURES = 4
 OBJECT_DISTANCE = 0.63
@@ -15,6 +16,7 @@ def serve_pil_image(pil_img):
     pil_img.save(img_io, 'JPEG', quality=70)
     img_io.seek(0)
     return img_io
+
 
 def ply_to_point_cloud(file):
     # Read the point cloud
@@ -62,6 +64,57 @@ def crop_point_cloud(cloud):
     vol = o3d.visualization.read_selection_polygon_volume("cropped.json")
     chair = vol.crop_point_cloud(cloud)
     return chair
+
+
+def crop_dinamically(cloud):
+    radius = 0.35
+    min_height = -0.4
+    max_height = 0.4
+    corners = np.array([[radius, max_height, radius],
+             [-radius, min_height, -radius],
+               [-radius, max_height, -radius],
+               [radius, min_height, -radius],
+               [radius, max_height, radius],
+               [-radius, max_height, radius],
+               [radius, min_height, radius],
+               [-radius, min_height, radius]
+               ])
+
+    # Convert the corners array to have type float64
+    bounding_polygon = corners.astype("float64")
+
+    # Create a SelectionPolygonVolume
+    vol = o3d.visualization.SelectionPolygonVolume()
+
+    # You need to specify what axis to orient the polygon to.
+    # I choose the "Y" axis. I made the max value the maximum Y of
+    # the polygon vertices and the min value the minimum Y of the
+    # polygon vertices.
+    vol.orthogonal_axis = "Z"
+    vol.axis_max = np.max(bounding_polygon[:, 2])
+    vol.axis_min = np.min(bounding_polygon[:, 2])
+
+    # Set all the Y values to 0 (they aren't needed since we specified what they
+    # should be using just vol.axis_max and vol.axis_min).
+    bounding_polygon[:, 2] = 0
+
+    # Convert the np.array to a Vector3dVector
+    vol.bounding_polygon = o3d.utility.Vector3dVector(bounding_polygon)
+
+    # Crop the point cloud using the Vector3dVector
+    cropped_pcd = vol.crop_point_cloud(cloud)
+    return cropped_pcd
+    # Get a nice looking bounding box to display around the newly cropped point cloud
+    # (This part is optional and just for display purposes)
+    # bounding_box = cropped_pcd.get_axis_aligned_bounding_box()
+    # bounding_box.color = (1, 0, 0)
+    #
+    # # Draw the newly cropped PCD and bounding box
+    # o3d.visualization.draw_geometries([cropped_pcd, bounding_box],
+    #                                   zoom=2,
+    #                                   front=[5, -2, 0.5],
+    #                                   lookat=[7.67473496, -3.24231903, 0.3062945],
+    #                                   up=[1.0, 0.0, 0.0])
 
 
 def crop(pcd):
@@ -151,11 +204,12 @@ def mesh2(pcd):
 def create_3d_model():
     pcd = merge_ply_files()
     # mesh = point_cloud_to_mesh(pcd)
-    cropped_pcd = crop(pcd)
-    mesh = mesh3(cropped_pcd)    # change to obj file
+    print("stroopppp")
+    cropped_pcd = crop_dinamically(pcd)
+    mesh = mesh3(cropped_pcd)  # change to obj file
     # o3d.io.write_triangle_mesh("copy_of_knot.ply", mesh)
-    #copy_textured_mesh = o3d.io.read_triangle_mesh('copy_of_crate.obj')
-    #draw_point_cloud(copy_textured_mesh)
+    # copy_textured_mesh = o3d.io.read_triangle_mesh('copy_of_crate.obj')
+    # draw_point_cloud(mesh)
     return mesh
 
 
@@ -165,6 +219,7 @@ def covert_to_obj(mesh, name):
                                mesh,
                                write_triangle_uvs=True)
     return file_url
+
 
 def convert_3d_to_2d(mesh, name):
     img_url = f'{name}.jpg'
@@ -181,3 +236,19 @@ def convert_3d_to_2d(mesh, name):
     # # WIDTH and HEIGHT are integers
     # resized_img = img.resize((1920, 1200))
     # resized_img.save("resized_image.jpg")
+
+
+# pcd = open3d.geometry.PointCloud()
+# np_points = np.array([[5.31972845, -3.21384387, 0.30217625],
+#                       [5.34483288, -1.13804348, 0.29917539],
+#                       [7.69983939, -1.16651864, 0.30329364],
+#                       [7.67473496, -3.24231903, 0.3062945],
+#                       [5.31845904, -3.21276837, 1.03551451],
+#                       [5.34356348, -1.13696798, 1.03251366],
+#                       [7.69856999, -1.16544314, 1.03663191],
+#                       [7.67346556, -3.24124353, 1.03963277]])
+#
+# # From numpy to Open3D
+# pcd.points = open3d.utility.Vector3dVector(np_points)
+# draw_point_cloud(pcd)
+# from_pcd_to_ply_file(pcd)

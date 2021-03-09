@@ -12,7 +12,6 @@ import numpy as np
 # Import OpenCV for easy image rendering
 import cv2
 NUMBER_OF_CAPTURES = 8
-OBJECT_DISTANCE = 1.19
 
 
 def capture_frames(counter=NUMBER_OF_CAPTURES):

@@ -4,8 +4,12 @@ file_name = "setting.json"
 
 def create_defualt_json():
     data = dict()
-    data['something'] = "else"
     data['number_of_frames'] = 4
+    data['obj_distance'] = 0.6
+    data['obj_radius'] = 0.35
+    data['voice_control'] = True
+
+
     try:
         with open(file_name, 'w') as outfile:
             json.dump(data, outfile, sort_keys=True, indent=4)

@@ -1,4 +1,6 @@
 {
     "number_of_frames": 4,
-    "something": "else"
+    "obj_distance": 0.6,
+    "obj_radius": 0.35,
+    "voice_control": true
 }
