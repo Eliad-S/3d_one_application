@@ -3,7 +3,8 @@ import numpy as np
 import pyrealsense2 as rs
 from PIL import Image
 import cv2
-from utils import serve_pil_image, create_3d_model
+from utils import serve_pil_image, create_3d_model, covert_to_obj
+
 time = datetime.now()
 rgb_option = 1
 aligned_option = 2

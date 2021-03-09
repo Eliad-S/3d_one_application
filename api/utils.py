@@ -151,40 +151,33 @@ def mesh2(pcd):
 def create_3d_model():
     pcd = merge_ply_files()
     # mesh = point_cloud_to_mesh(pcd)
-
     cropped_pcd = crop(pcd)
-    mesh = mesh3(cropped_pcd)
-    # change to obj file
-    #draw_point_cloud(mesh)
+    mesh = mesh3(cropped_pcd)    # change to obj file
+    # o3d.io.write_triangle_mesh("copy_of_knot.ply", mesh)
+    #copy_textured_mesh = o3d.io.read_triangle_mesh('copy_of_crate.obj')
+    #draw_point_cloud(copy_textured_mesh)
     return mesh
 
 
+def covert_to_obj(mesh, name):
+    file_url = f'{name}.obj'
+    o3d.io.write_triangle_mesh(file_url,
+                               mesh,
+                               write_triangle_uvs=True)
+    return file_url
 
-
-# print("what")
-# create_3d_model()
-
-# mesh = point_cloud_to_mesh(cropped_pcd)
-# mesh = point_cloud_to_mesh(cropped_pcd)
-# draw_point_cloud(mesh)
-
-# from_pcd_to_ply_file(cropped_pcd)
-
-# centered_cloud = point_of_origin(cloud)
-# rotate_point_cloud(centered_cloud)
-# draw_point_cloud(cloud)
-
-# create_3d_model()
-
-
-# def check_timeout():
-#     while True:
-#         sleep(3)
-#         now = datetime.now()
-#         mutex.acquire()
-#         try:
-#             diff = (now - time).total_seconds()
-#             print(diff)
-#             print('Do some stuff')
-#         finally:
-#             mutex.release()
+def convert_3d_to_2d(mesh, name):
+    img_url = f'{name}.jpg'
+    vis = o3d.visualization.Visualizer()
+    vis.create_window()
+    vis.get_render_option().point_color_option = o3d.visualization.PointColorOption.Color
+    vis.get_render_option().point_size = 3.0
+    vis.add_geometry(mesh)
+    vis.capture_screen_image(img_url, do_render=True)
+    vis.destroy_window()
+    return img_url
+    # resize img
+    # img = Image.open("file.jpg")
+    # # WIDTH and HEIGHT are integers
+    # resized_img = img.resize((1920, 1200))
+    # resized_img.save("resized_image.jpg")
