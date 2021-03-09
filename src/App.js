@@ -11,6 +11,8 @@ import restartIcon from './images/restart_alt-white-24dp.svg'
 import loadingGIF from './images/loading.gif';
 import './fixed-left.css';
 import Chart from '../node_modules/chart.js/dist/Chart.js';
+import deleteIcon from './images/delete-white-24dp.svg'
+import {OBJModel} from 'react-3d-viewer'
 
 
 
@@ -61,9 +63,7 @@ class Container extends React.Component {
     }
     if(this.state.current_screen === "settings") {
       return(
-        <div className="p-3">
-          <h1 className="text-left">Settings</h1>
-        </div>
+        <SettingsScreen settings={this.state.settings} />
       );
     }
   }
@@ -417,7 +417,7 @@ class My3DModelsScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      models: [1,1,1,1],
+      models: [{name: "1"},{name: "eliad sellem"},{name: "idan yarchi"}, {name: "gadi didi"}],
     };
   }
 
@@ -436,6 +436,32 @@ class My3DModelsScreen extends React.Component {
     .catch((error) => {
         console.error('Error:', error);})
   }
+
+    deleteModel(modelName) {
+      let name = encodeURIComponent(modelName.trim())
+      console.log(name)
+      let newModels;
+      fetch('/models/delete/name').then(response => {
+      if(response.ok) {
+        console.log("Model was successfuly deleted");
+        return response.json()
+      }
+    }).then(data => {
+      newModels = this.state.models.filter(
+        function(model){ return model.name !== modelName });
+      this.setState({
+        models: newModels,
+      })
+    })
+    .catch((error) => {
+        console.error('Error:', error);})
+      newModels = this.state.models.filter(
+        function(model){ return model.name !== modelName });
+      this.setState({
+        models: newModels,
+      })
+    }
+
     render() {
       return(
         <div id="container" className="container-fluid p-3">
@@ -446,19 +472,22 @@ class My3DModelsScreen extends React.Component {
                 return(
                   <div className=" m-4 p-4 border-bottom text-left ">
                   <div className="row">
-                  <div className="col">
-                  
-                  <img src={model.img_file} className="rounded float-left" width="250px" height="250px"/>
-                  <div className="pl-3 float-left">
-                  <h4 className="font-weight-light">{model.name}</h4>
-                  
-                  <ul class="list-group list-group-flush">
-                    <li class="list-group-item"><button class="btn btn-primary">View 3D Model</button></li>
-                    <li class="list-group-item">Scanned at {model.creation_date}</li>
-                    <li class="list-group-item">Size: {model.size}</li>
-                    <li class="list-group-item">Share</li>
-                  </ul>
-                  </div>
+                    <div className="col">
+                    <img src={model.img_file} className="rounded float-left" width="250px" height="250px"/>
+                      <div className="pl-3 float-left">
+                        <h4 className="font-weight-light">{model.name}</h4>
+                        <ul class="list-group list-group-flush">
+                          <li class="list-group-item"><button onClick={} class="btn btn-primary">View 3D Model</button></li>
+                          <li class="list-group-item">Scanned at {model.creation_date}</li>
+                          <li class="list-group-item">Size: {model.size}</li>
+                          <li class="list-group-item">Share</li>
+                        </ul>
+                      </div>
+                    </div>
+                    <div className="col">
+                    <button type="button" className="btn bg-danger p-1 rounded float-right" onClick={(event) => this.deleteModel(model.name)}>
+                      <img src={deleteIcon} alt="Delete" /> 
+                    </button>
                   </div>
                   </div>
                 </div>
@@ -469,6 +498,64 @@ class My3DModelsScreen extends React.Component {
           </div>
         </div>
       );
+    }
+  }
+
+class SettingsScreen extends React.Component {
+    constructor(props) {
+      super(props);
+      this.state = {
+        settings: props.settings,
+      };
+    }
+    render() {
+      return(
+        <div id="container" className="container-fluid p-3">
+          <div class="row">
+            <div class="col">
+              <h1 className="text-left font-weight-light">Settings</h1>
+              <div class="row m-4 p-4 border-bottom">
+                <div class="col">
+                  <div class="float-left">
+                    <input class="form-check-input" type="checkbox" defaultChecked={true} id="voiceCapture" />
+                    <label class="form-check-label" for="voiceCapture">
+                      Enable Voice Capture
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div class="row m-4 p-4 border-bottom">
+                <div class="col">
+                  <div class="float-left">
+                    <label for="points">Object's Center Distance From Camera</label>
+                    <br />
+                    Accurate input will result a finer merge of all frames.
+                    <br /> 
+                    <input name="radius" type="number" id="radiusInput" step="0.01" className="form-control"
+                   placeholder="0.5" onChange={this.onInputChange} ref={el => this.radius = el} required/>
+                  </div>
+                </div>
+              </div>
+              <div class="row m-4 p-4 border-bottom">
+                <div class="col">
+                  <div class="float-left">
+                    <label for="points">Object Radius</label>
+                    <br />
+                    Accurate input will result a finer cropping of the object.
+                    <br /> 
+                    <input type="range" id="points" name="points" step="0.1" defaultValue="0.5" min="0.5" max="3" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+
+    componentWillReceiveProps(settings) {
+      this.setState({ settings: settings });  
     }
   }
 function App() {
