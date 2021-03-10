@@ -39,8 +39,8 @@ def delete_item(name):
     count = Model.query.filter_by(name=name).delete()
     if os.path.exists(model.img_url):
         os.remove(model.img_url)
-    if os.path.exists(model.img_url):
-        os.remove("model.img_url")
+    if os.path.exists(model.model_url):
+        os.remove(model.model_url)
     sess.flush()
     sess.commit()
     return count

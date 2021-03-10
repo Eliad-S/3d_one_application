@@ -1,5 +1,6 @@
 import numpy as np
 import open3d
+import pymesh
 from open3d.cpu.pybind.io import read_point_cloud
 from open3d.cpu.pybind.visualization import draw_geometries
 import open3d as o3d
@@ -215,9 +216,10 @@ def create_3d_model():
 
 def covert_to_obj(mesh, name):
     file_url = f'{name}.obj'
-    o3d.io.write_triangle_mesh(file_url,
-                               mesh,
-                               write_triangle_uvs=True)
+    pymesh.save_mesh("filename.obj", mesh)
+    # o3d.io.write_triangle_mesh(file_url,
+    #                            mesh,
+    #                            write_triangle_uvs=True)
     return file_url
 
 

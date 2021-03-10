@@ -13,6 +13,7 @@ import './fixed-left.css';
 import Chart from '../node_modules/chart.js/dist/Chart.js';
 import deleteIcon from './images/delete-white-24dp.svg'
 import {OBJModel} from 'react-3d-viewer'
+// import eliad from '../public/e.obj'
 
 
 
@@ -417,7 +418,7 @@ class My3DModelsScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      models: [{name: "1"},{name: "eliad sellem"},{name: "idan yarchi"}, {name: "gadi didi"}],
+      models: [],
     };
   }
 
@@ -441,7 +442,7 @@ class My3DModelsScreen extends React.Component {
       let name = encodeURIComponent(modelName.trim())
       console.log(name)
       let newModels;
-      fetch('/models/delete/name').then(response => {
+      fetch('/models/delete/' + name).then(response => {
       if(response.ok) {
         console.log("Model was successfuly deleted");
         return response.json()
@@ -455,11 +456,11 @@ class My3DModelsScreen extends React.Component {
     })
     .catch((error) => {
         console.error('Error:', error);})
-      newModels = this.state.models.filter(
-        function(model){ return model.name !== modelName });
-      this.setState({
-        models: newModels,
-      })
+      // newModels = this.state.models.filter(
+      //   function(model){ return model.name !== modelName });
+      // this.setState({
+      //   models: newModels,
+      // })
     }
 
     render() {
@@ -470,19 +471,20 @@ class My3DModelsScreen extends React.Component {
             <h1 className="text-left font-weight-light">My 3D Models</h1>
               {this.state.models.map(model => {
                 return(
-                  <div className=" m-4 p-4 border-bottom text-left ">
+                  <div className="m-4 p-4 border-bottom text-left">
                   <div className="row">
                     <div className="col">
                     <img src={model.img_file} className="rounded float-left" width="250px" height="250px"/>
                       <div className="pl-3 float-left">
                         <h4 className="font-weight-light">{model.name}</h4>
                         <ul class="list-group list-group-flush">
-                          <li class="list-group-item"><button onClick={} class="btn btn-primary">View 3D Model</button></li>
+                          <li class="list-group-item"><button class="btn btn-primary">View 3D Model</button></li>
                           <li class="list-group-item">Scanned at {model.creation_date}</li>
                           <li class="list-group-item">Size: {model.size}</li>
                           <li class="list-group-item">Share</li>
                         </ul>
                       </div>
+                      <OBJModel src={'1.ply'} alt={model.name} />
                     </div>
                     <div className="col">
                     <button type="button" className="btn bg-danger p-1 rounded float-right" onClick={(event) => this.deleteModel(model.name)}>
