@@ -148,8 +148,7 @@ def create_model(name=None):
         if count:
             name = f'{name}({count})'
         print("convert obj")
-        # obj_url = covert_to_obj(mesh, name)
-        time.sleep(15)
+        obj_url = covert_to_obj(mesh, name)
         print("convert img")
 
         img_url = convert_3d_to_2d(mesh, name)

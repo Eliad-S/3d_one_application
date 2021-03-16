@@ -15,6 +15,8 @@ import deleteIcon from './images/delete-white-24dp.svg'
 import micIcon from './images/mic-black-24dp.svg'
 import {OBJModel} from 'react-3d-viewer'
 // import eliad from '../public/e.obj'
+import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition'
+
 
 
 
@@ -174,6 +176,7 @@ class ScanScreen extends React.Component {
     this.capture = this.capture.bind(this);
     this.restartScan = this.restartScan.bind(this);
     this.createModel = this.createModel.bind(this);
+    this.handleSpeechtoText = this.handleSpeechtoText.bind(this);
   }
 
 async componentDidMount() {
@@ -271,6 +274,14 @@ async componentDidMount() {
   componentWillReceiveProps(settings) {
     this.setState({ settings: settings });  
   }
+
+  handleSpeechtoText(transcript) {
+    console.log(transcript + "!!!!")
+    console.log(transcript.localeCompare("capture") === 0)
+    if(transcript.localeCompare("capture") === 0) {
+      this.capture();
+    }
+  }
   render() {
     return(
       <div id="container" className="container-fluid p-3">
@@ -339,6 +350,7 @@ async componentDidMount() {
                 </div>
               {console.log(this.state.settings.settings.number_of_frames)}
             </div>
+            <Dictaphone handleSpeech={this.handleSpeechtoText} />
             {<TodoPage />}
             </>
           }
@@ -361,6 +373,28 @@ async componentDidMount() {
     </div>
     );
   }
+}
+
+export const Dictaphone = ({handleSpeech}) => {
+  const { transcript, resetTranscript } = useSpeechRecognition()
+
+  if (!SpeechRecognition.browserSupportsSpeechRecognition()) {
+    return null
+  }
+
+  SpeechRecognition.startListening()
+  handleSpeech(transcript)
+  // resetTranscript()
+  // setTimeout(resetTranscript(), 1000)
+  
+  return (
+    <div>
+      {/* <button onClick={SpeechRecognition.startListening}>Start</button> */}
+      <button onClick={SpeechRecognition.stopListening}>Stop</button>
+      <button onClick={resetTranscript}>Reset</button>
+      <p>{transcript}</p>
+    </div>
+  )
 }
 
 export const TodoPage = () => {

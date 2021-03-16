@@ -212,14 +212,13 @@ def create_3d_model():
     # draw_point_cloud(mesh)
     return mesh
 
-
 def covert_to_obj(mesh, name):
     file_url = f'../public/{name}.obj'
     o3d.io.write_triangle_mesh(file_url,
-                               mesh,
-                               write_triangle_uvs=True)
+                               mesh,write_ascii=True)
     return f'{name}.obj'
 
+# covert_to_obj(create_3d_model(), "elasda")
 
 def convert_3d_to_2d(mesh, name):
     img_url = f'../public/{name}.jpg'
