@@ -12,6 +12,7 @@ import loadingGIF from './images/loading.gif';
 import './fixed-left.css';
 import Chart from '../node_modules/chart.js/dist/Chart.js';
 import deleteIcon from './images/delete-white-24dp.svg'
+import micIcon from './images/mic-black-24dp.svg'
 import {OBJModel} from 'react-3d-viewer'
 // import eliad from '../public/e.obj'
 
@@ -172,6 +173,7 @@ class ScanScreen extends React.Component {
     this.scanning = this.scanning.bind(this);
     this.capture = this.capture.bind(this);
     this.restartScan = this.restartScan.bind(this);
+    this.createModel = this.createModel.bind(this);
   }
 
 async componentDidMount() {
@@ -253,6 +255,19 @@ async componentDidMount() {
         console.error('Error:', error);})
   }
 
+  
+  createModel() {
+    console.log(this.modelName.value)
+    fetch('/models/create/' + this.modelName.value, {
+    }).then(response => {
+      if(response.ok) {
+        console.log("model created");
+      }
+    })
+    .catch((error) => {
+        console.error('Error:', error);}) 
+  }
+
   componentWillReceiveProps(settings) {
     this.setState({ settings: settings });  
   }
@@ -296,31 +311,36 @@ async componentDidMount() {
                 //   document.getElementById('frame').setAttribute('src', img);
                 // })
             <>
-            <button type="button" class="btn btn-primary" onClick={this.capture}>Capture Frame</button> or press 'E'
-            <FramesPieChart numberOfFrames={this.state.settings.settings.number_of_frames} numberOfFramesCaptured={this.state.numberOfFramesCaptured} />
-            {console.log(this.state.settings.settings.number_of_frames)}
-            {<TodoPage />}
             {this.state.numberOfFramesCaptured === this.state.settings.settings.number_of_frames ? 
-
-            <div class="modal-dialog" role="document">
+            <div class="modal-dialog shadow" role="document">
               <div class="modal-content">
                 <div class="modal-header">
-                  <h5 class="modal-title">Modal title</h5>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
+                  <h5 class="modal-title">Enter a name for the model</h5>
                 </div>
                 <div class="modal-body">
-                  <p>Modal body text goes here.</p>
+                  <input class="form-control" type="text" placeholder="Name goes here" ref={(c) => this.modelName = c} name="modelName" ></input>
                 </div>
                 <div class="modal-footer">
-                  <button type="button" class="btn btn-primary">Save changes</button>
-                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  <button type="button" class="btn btn-primary" onClick={this.createModel}>Create 3D Model</button>
                 </div>
               </div>
             </div>
 
-            : ''
+            : 
+            <>
+            <button type="button" className="btn btn-primary btn-lg font-weight-light float-left" onClick={this.capture}>Capture Frame</button>
+            <div className="container float-left d-flex my-auto">
+              <FramesPieChart numberOfFrames={this.state.settings.settings.number_of_frames} numberOfFramesCaptured={this.state.numberOfFramesCaptured} />
+              <div className="ml-3 text-left">
+                <h5 className="font-weight-normal justify-content-start">{this.state.numberOfFramesCaptured}/{this.state.settings.settings.number_of_frames} frames were captured
+                <h6 className="font-weight-light"> Press "Capture Frame" and turn the object 90° clockwise</h6>
+                {this.state.settings.settings.voice_control ? <><img src={micIcon} alt="Mic Icon"/><h6 className="font-weight-light">Voice Control is on, say "capture"</h6></> : ''}
+                </h5>
+                </div>
+              {console.log(this.state.settings.settings.number_of_frames)}
+            </div>
+            {<TodoPage />}
+            </>
           }
             </> : ''}
             {this.state.currentlyScanning && !this.state.connectedToServer ?
@@ -371,7 +391,7 @@ export const TodoPage = () => {
 
   return(
     <>
-      <img src={todo} alt="camera feed" />
+      <img  className="w-75 mt-4 rounded" src={todo} alt="camera feed" />
     </>
   )
 }
@@ -400,6 +420,7 @@ function FramesPieChart({numberOfFrames, numberOfFramesCaptured}) {
         legend: {
             display: false
         },
+        responsive: false,
         tooltips: {
           enabled: false
      }
@@ -408,9 +429,9 @@ function FramesPieChart({numberOfFrames, numberOfFramesCaptured}) {
     const chart = new Chart(canvas.current.getContext('2d'), cfg);
     return () => chart.destroy();
   });
-  return <div className="chartjs-wrapper w-25 h-25">
-                {numberOfFramesCaptured}/{numberOfFrames} frames were captured
-    <canvas ref={canvas} className="chartjs"></canvas>
+  return <div className="chartjs-wrapper">
+                
+    <canvas ref={canvas} className="chartjs" width="50" height="50"></canvas>
     </div>;
 }
 
@@ -474,7 +495,7 @@ class My3DModelsScreen extends React.Component {
                   <div className="m-4 p-4 border-bottom text-left">
                   <div className="row">
                     <div className="col">
-                    <img src={model.img_file} className="rounded float-left" width="250px" height="250px"/>
+                    <img src={model.img_url} className="rounded float-left" width="300px" height="168px"/>
                       <div className="pl-3 float-left">
                         <h4 className="font-weight-light">{model.name}</h4>
                         <ul class="list-group list-group-flush">

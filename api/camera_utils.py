@@ -4,7 +4,6 @@ import pyrealsense2 as rs
 from PIL import Image
 import cv2
 from utils import serve_pil_image, create_3d_model, covert_to_obj
-
 time = datetime.now()
 rgb_option = 1
 aligned_option = 2
@@ -37,7 +36,7 @@ class CameraPipe:
         # Create a config and configure the pipeline to stream
 
         depth_sensor.set_option(rs.option.min_distance, 0.25)
-        # depth_sensor.set_option(rs.option.max_distance, 1)
+        # depth_sensor.set_option(rs.option.max_distance, 0.7)
 
         print("Depth Scale is: ", depth_scale)
 
@@ -89,6 +88,7 @@ class CameraPipe:
 
     def get_frame(self, option):
         print("enter capture_frame")
+        print(self.is_open_pip)
         if not self.is_open_pip:
             print("pipe is closed, open first")
             return None

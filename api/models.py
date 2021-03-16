@@ -21,9 +21,9 @@ class Model(Base):
         self.model_url = model_url
         self.img_url = img_url
         self.number_of_frames = number_of_frames
-        size_bytes = os.path.getsize(model_url)
+        # size_bytes = os.path.getsize(f"../public/{model_url}")
         print(f"\nThe size of {model_url} is :{self.size} Bytes")
-        self.size = size(size_bytes) + 'B'
+        self.size = size(5000) + 'B'
 
 
     def __repr__(self):
@@ -39,3 +39,4 @@ def init_db():
     if os.path.exists("dbdir/models.db"):
         os.remove("dbdir/models.db")
     Base.metadata.create_all(bind=engine)
+# init_db()

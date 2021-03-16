@@ -1,3 +1,4 @@
+import os
 import time
 from sqlalchemy.exc import IntegrityError
 
@@ -37,6 +38,7 @@ def close_pipe():
 def open_pipe():
     try:
         camera.open_pipe()
+        camera.reset_captures()
         return make_response(jsonify("camera is on"), 200)
 
     except Exception as error:
@@ -112,6 +114,9 @@ def get_models_by_name(name=None):
 def capture():
     try:
         camera.capture_frame()
+        # if camera.captured_frames_counter == setting_manager.get_val("number_of_frames"):
+        #     camera.close_pipe()
+        #     camera.reset_captures()
         return {"succeed closing pipe": 200}
     except Exception as error:
         print(error)
@@ -136,18 +141,28 @@ def get_setting():
 
 @app.route('/models/create/<name>', methods=['GET'])
 def create_model(name=None):
+    global obj_url, img_url
     try:
         mesh = camera.create_model()
         count = db_manager.count(name)
         if count:
             name = f'{name}({count})'
-        obj_url = covert_to_obj(mesh, name)
+        print("convert obj")
+        # obj_url = covert_to_obj(mesh, name)
+        time.sleep(15)
+        print("convert img")
+
         img_url = convert_3d_to_2d(mesh, name)
-        db_manager.add_item(name, obj_url, img_url)
+        db_manager.add_item(name=name, obj_url="defualt.obj", img_url=img_url)
+        print("save midel")
         model = db_manager.get_item(name)
         if model is not None:
             return model.serialize
         return make_response(jsonify("model was not found in db"), 404)
     except Exception as error:
         print(error)
+        if os.path.exists(f'../public/{obj_url}'):
+            os.remove(f'../public/{obj_url}')
+        if os.path.exists(f'../public/{img_url}'):
+            os.remove(f'../public/{img_url}')
         return make_response(jsonify("failed creating model"), 404)

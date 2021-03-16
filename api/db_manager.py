@@ -15,7 +15,9 @@ Base.query = db_session.query_property()
 
 def add_item(name, obj_url, img_url):
     from models import Model
+    print(f'{name} {obj_url} {img_url}')
     try:
+        print('start')
         sess = db_session()
         model = Model(name, obj_url, img_url)
         sess.add(model)
@@ -25,6 +27,11 @@ def add_item(name, obj_url, img_url):
         sess.rollback()
         existing = db_session.query(Model).filter_by(name=name).one()
         print('* INTEGRITY FAILURE, EMAIL IN USE: {}'.format(existing))
+        return False
+    except Exception as error:
+        print(error)
+        print("rollback")
+        sess.rollback()
         return False
     else:
         sess.commit()
@@ -37,10 +44,10 @@ def delete_item(name):
     sess = db_session()
     model = get_item(name)
     count = Model.query.filter_by(name=name).delete()
-    if os.path.exists(model.img_url):
-        os.remove(model.img_url)
-    if os.path.exists(model.model_url):
-        os.remove(model.model_url)
+    if os.path.exists(f'../public/{model.img_url}'):
+        os.remove(f'../public/{model.img_url}')
+    if os.path.exists(f'../public/{model.model_url}'):
+        os.remove(f'../public/{model.model_url}')
     sess.flush()
     sess.commit()
     return count
@@ -53,6 +60,7 @@ def get_all():
 
 def get_item(name):
     from models import Model
+    print(name)
     return Model.query.filter_by(name=name).first()
 
 

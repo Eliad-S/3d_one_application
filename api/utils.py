@@ -1,6 +1,5 @@
 import numpy as np
 import open3d
-import pymesh
 from open3d.cpu.pybind.io import read_point_cloud
 from open3d.cpu.pybind.visualization import draw_geometries
 import open3d as o3d
@@ -215,16 +214,15 @@ def create_3d_model():
 
 
 def covert_to_obj(mesh, name):
-    file_url = f'{name}.obj'
-    pymesh.save_mesh("filename.obj", mesh)
-    # o3d.io.write_triangle_mesh(file_url,
-    #                            mesh,
-    #                            write_triangle_uvs=True)
-    return file_url
+    file_url = f'../public/{name}.obj'
+    o3d.io.write_triangle_mesh(file_url,
+                               mesh,
+                               write_triangle_uvs=True)
+    return f'{name}.obj'
 
 
 def convert_3d_to_2d(mesh, name):
-    img_url = f'{name}.jpg'
+    img_url = f'../public/{name}.jpg'
     vis = o3d.visualization.Visualizer()
     vis.create_window()
     vis.get_render_option().point_color_option = o3d.visualization.PointColorOption.Color
@@ -232,7 +230,7 @@ def convert_3d_to_2d(mesh, name):
     vis.add_geometry(mesh)
     vis.capture_screen_image(img_url, do_render=True)
     vis.destroy_window()
-    return img_url
+    return f'{name}.jpg'
     # resize img
     # img = Image.open("file.jpg")
     # # WIDTH and HEIGHT are integers
