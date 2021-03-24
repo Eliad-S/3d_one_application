@@ -8,11 +8,13 @@ from db_manager import db_session
 from setting_manager import Setting_Manager
 import db_manager
 from utils import covert_to_obj, convert_3d_to_2d
+from hurry.filesize import size
+
 
 setting_manager = Setting_Manager()
 camera = CameraPipe()
 app = Flask(__name__)
-
+url_base = "../public"
 
 @app.teardown_appcontext
 def shutdown_session(exception=None):
@@ -85,7 +87,7 @@ def get_models():
 @app.route('/models/delete/<name>', methods=['GET'])
 def get_models_by_name(name=None):
     try:
-        result = db_manager.delete_item(name)
+        result = db_manager.delete_item(name, url_base)
         if result == 0:
             make_response(jsonify(f"didn't found model named {name}"), 200)
         return make_response(jsonify("model has been deleted"), 200)
@@ -147,12 +149,17 @@ def create_model(name=None):
         count = db_manager.count(name)
         if count:
             name = f'{name}({count})'
-        print("convert obj")
-        obj_url = covert_to_obj(mesh, name)
-        print("convert img")
+        obj_url = f'{url_base}/{name}.obj'
+        img_url = f'{url_base}/{name}.jpg'
 
-        img_url = convert_3d_to_2d(mesh, name)
-        db_manager.add_item(name=name, obj_url=f'../api/{obj_url}', img_url=f'../api/{img_url}')
+        print("convert obj")
+        covert_to_obj(mesh, obj_url)
+        print("convert img")
+        convert_3d_to_2d(mesh, img_url)
+        size_bites = os.path.getsize(obj_url)
+        size_bytes = size(size_bites) + 'B'
+
+        db_manager.add_item(name=name, obj_url=f'my_models/{name}.obj', img_url=f'my_models/{name}.jpg', size=size_bytes)
         print("save midel")
         model = db_manager.get_item(name)
         if model is not None:
@@ -160,8 +167,8 @@ def create_model(name=None):
         return make_response(jsonify("model was not found in db"), 404)
     except Exception as error:
         print(error)
-        if os.path.exists(f'{obj_url}'):
-            os.remove(f'{obj_url}')
-        if os.path.exists(f'{img_url}'):
-            os.remove(f'{img_url}')
+        if os.path.exists(obj_url):
+            os.remove(obj_url)
+        if os.path.exists(img_url):
+            os.remove(img_url)
         return make_response(jsonify("failed creating model"), 404)

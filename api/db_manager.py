@@ -13,13 +13,13 @@ Base = declarative_base()
 Base.query = db_session.query_property()
 
 
-def add_item(name, obj_url, img_url):
+def add_item(name, obj_url, img_url, size):
     from models import Model
     print(f'{name} {obj_url} {img_url}')
     try:
         print('start')
         sess = db_session()
-        model = Model(name, obj_url, img_url)
+        model = Model(name, obj_url, img_url, size)
         sess.add(model)
         print('\nADDING {}'.format(model))
         sess.flush()
@@ -39,15 +39,17 @@ def add_item(name, obj_url, img_url):
         return True
 
 
-def delete_item(name):
+def delete_item(name, url_base):
     from models import Model
+    obj_url = f'{url_base}/{name}.obj'
+    img_url = f'{url_base}/{name}.jpg'
     sess = db_session()
     model = get_item(name)
     count = Model.query.filter_by(name=name).delete()
-    if os.path.exists(f'models/{model.name}.jpg'):
-        os.remove(f'models/{model.name}.jpg')
-    if os.path.exists(f'models/{model.name}.obj'):
-        os.remove(f'models/{model.name}.obj')
+    if os.path.exists(img_url):
+        os.remove(img_url)
+    if os.path.exists(obj_url):
+        os.remove(obj_url)
     sess.flush()
     sess.commit()
     return count
