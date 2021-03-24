@@ -596,42 +596,40 @@ class SettingsScreen extends React.Component {
       };
     }
     render() {
-      return(
+      return (
         <div id="container" className="container-fluid p-3">
           <div class="row">
             <div class="col">
               <h1 className="text-left font-weight-light">Settings</h1>
               <div class="row m-4 p-4 border-bottom">
-                <div class="col">
-                  <div class="float-left">
-                    <input class="form-check-input" type="checkbox" defaultChecked={true} id="voiceCapture" />
-                    <label class="form-check-label" for="voiceCapture">
-                      Enable Voice Capture
-                    </label>
-                  </div>
+                <div class="col-3 text-right">
+                  <label class="form-check-label" for="voiceCapture">
+                    Enable Voice Control
+                  </label>
+                </div>
+                <div className="col-3 float-left text-left">
+                <input class="form-check-input" type="checkbox" defaultChecked={true} id="voiceCapture" />
+                <small>Use Voice Control to capture frames using your voice. Whenever scanning you may say "capture" instead of pressing "capture" button.</small>
                 </div>
               </div>
               <div class="row m-4 p-4 border-bottom">
-                <div class="col">
-                  <div class="float-left">
-                    <label for="points">Object's Center Distance From Camera</label>
-                    <br />
-                    Accurate input will result a finer merge of all frames.
-                    <br /> 
-                    <input name="radius" type="number" id="radiusInput" step="0.01" className="form-control"
-                   placeholder="0.5" onChange={this.onInputChange} ref={el => this.radius = el} required/>
-                  </div>
+                <div class="col-3 text-right">
+                  <label for="points">Object's Center Distance From Camera:</label>
+                </div>
+                <div className="col-3 float-left text-left">
+                  <input name="radius" type="number" id="radiusInput" step="0.01" className="form-control"
+                    placeholder="0.5" onChange={this.onInputChange} ref={el => this.radius = el} required />
+                  <small>Accurate input will result a finer merge of all frames.</small>
                 </div>
               </div>
               <div class="row m-4 p-4 border-bottom">
-                <div class="col">
-                  <div class="float-left">
-                    <label for="points">Object Radius</label>
-                    <br />
-                    Accurate input will result a finer cropping of the object.
-                    <br /> 
-                    <input type="range" id="points" name="points" step="0.1" defaultValue="0.5" min="0.5" max="3" />
-                  </div>
+                <div class="col-3 text-right">
+                    <label for="points">Object Radius:</label>
+                </div>
+                <div className="col-3 float-left text-left">
+                <input className="w-100" type="range" id="points" name="points" step="0.1" defaultValue="0.5" min="0.5" max="3" />
+                <br />
+                  <small>Accurate input will result a finer cropping of the object.</small>
                 </div>
               </div>
             </div>
