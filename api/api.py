@@ -14,7 +14,7 @@ from hurry.filesize import size
 setting_manager = Setting_Manager()
 camera = CameraPipe()
 app = Flask(__name__)
-url_base = "../public"
+url_base = "../public/my_models"
 
 @app.teardown_appcontext
 def shutdown_session(exception=None):

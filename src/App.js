@@ -569,7 +569,7 @@ class My3DModelsScreen extends React.Component {
                           <li class="list-group-item">Share</li>
                         </ul>
                       </div>
-                      <OBJModel src={'1.ply'} alt={model.name} />
+                      <OBJModel src={model.model_url} alt={model.name} />
                     </div>
                     <div className="col">
                     <button type="button" className="btn bg-danger p-1 rounded float-right" onClick={(event) => this.deleteModel(model.name)}>
