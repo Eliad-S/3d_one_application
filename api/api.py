@@ -152,7 +152,7 @@ def create_model(name=None):
         print("convert img")
 
         img_url = convert_3d_to_2d(mesh, name)
-        db_manager.add_item(name=name, obj_url="defualt.obj", img_url=img_url)
+        db_manager.add_item(name=name, obj_url=f'../api/{obj_url}', img_url=f'../api/{img_url}')
         print("save midel")
         model = db_manager.get_item(name)
         if model is not None:
@@ -160,8 +160,8 @@ def create_model(name=None):
         return make_response(jsonify("model was not found in db"), 404)
     except Exception as error:
         print(error)
-        if os.path.exists(f'../public/{obj_url}'):
-            os.remove(f'../public/{obj_url}')
-        if os.path.exists(f'../public/{img_url}'):
-            os.remove(f'../public/{img_url}')
+        if os.path.exists(f'{obj_url}'):
+            os.remove(f'{obj_url}')
+        if os.path.exists(f'{img_url}'):
+            os.remove(f'{img_url}')
         return make_response(jsonify("failed creating model"), 404)

@@ -21,9 +21,9 @@ class Model(Base):
         self.model_url = model_url
         self.img_url = img_url
         self.number_of_frames = number_of_frames
-        # size_bytes = os.path.getsize(f"../public/{model_url}")
+        size_bytes = os.path.getsize(f'my_models/{name}.obj')
         print(f"\nThe size of {model_url} is :{self.size} Bytes")
-        self.size = size(5000) + 'B'
+        self.size = size(size_bytes) + 'B'
 
 
     def __repr__(self):

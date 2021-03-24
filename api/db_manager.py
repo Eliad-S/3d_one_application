@@ -44,10 +44,10 @@ def delete_item(name):
     sess = db_session()
     model = get_item(name)
     count = Model.query.filter_by(name=name).delete()
-    if os.path.exists(f'../public/{model.img_url}'):
-        os.remove(f'../public/{model.img_url}')
-    if os.path.exists(f'../public/{model.model_url}'):
-        os.remove(f'../public/{model.model_url}')
+    if os.path.exists(f'models/{model.name}.jpg'):
+        os.remove(f'models/{model.name}.jpg')
+    if os.path.exists(f'models/{model.name}.obj'):
+        os.remove(f'models/{model.name}.obj')
     sess.flush()
     sess.commit()
     return count

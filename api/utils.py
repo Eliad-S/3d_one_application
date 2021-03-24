@@ -213,15 +213,15 @@ def create_3d_model():
     return mesh
 
 def covert_to_obj(mesh, name):
-    file_url = f'../public/{name}.obj'
+    file_url = f'my_models/{name}.obj'
     o3d.io.write_triangle_mesh(file_url,
-                               mesh,write_ascii=True)
-    return f'{name}.obj'
+                               mesh, write_ascii=True)
+    return file_url
 
 # covert_to_obj(create_3d_model(), "elasda")
 
 def convert_3d_to_2d(mesh, name):
-    img_url = f'../public/{name}.jpg'
+    img_url = f'my_models/{name}.jpg'
     vis = o3d.visualization.Visualizer()
     vis.create_window()
     vis.get_render_option().point_color_option = o3d.visualization.PointColorOption.Color
@@ -229,7 +229,7 @@ def convert_3d_to_2d(mesh, name):
     vis.add_geometry(mesh)
     vis.capture_screen_image(img_url, do_render=True)
     vis.destroy_window()
-    return f'{name}.jpg'
+    return img_url
     # resize img
     # img = Image.open("file.jpg")
     # # WIDTH and HEIGHT are integers

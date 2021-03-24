@@ -15,6 +15,8 @@ import deleteIcon from './images/delete-white-24dp.svg'
 import micIcon from './images/mic-black-24dp.svg'
 import {OBJModel} from 'react-3d-viewer'
 // import eliad from '../public/e.obj'
+// import eliad from '../api/eliad sellem(1).jpg'
+
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition'
 
 
@@ -36,6 +38,9 @@ class Container extends React.Component {
     fetch('/settings').then(response => {
       if(response.ok) {
         return response.json()
+      }
+      else {
+        throw new Error('Something went wrong');
       }
     }).then(data => {
       
@@ -189,6 +194,9 @@ async componentDidMount() {
         console.log("open");
         return response.json()
       }
+      else {
+        throw new Error('Something went wrong');
+      }
     }).then(data =>
       this.setState({
         connectedToServer: true,
@@ -203,6 +211,9 @@ async componentDidMount() {
       if(response.ok) {
         console.log("close");
         return response.json()
+      }
+      else {
+        throw new Error('Something went wrong');
       }
     }).then(data =>
       this.setState({
@@ -232,6 +243,9 @@ async componentDidMount() {
         console.log("capture");
         return response.json()
       }
+      else {
+        throw new Error('Something went wrong');
+      }
     }).then(data =>
       this.setState({
         numberOfFramesCaptured: this.state.numberOfFramesCaptured + 1,
@@ -249,6 +263,9 @@ async componentDidMount() {
         console.log("restart");
         return response.json()
       }
+      else {
+        throw new Error('Something went wrong');
+      }
     }).then(data =>
       this.setState({
         numberOfFramesCaptured: 0,
@@ -265,6 +282,9 @@ async componentDidMount() {
     }).then(response => {
       if(response.ok) {
         console.log("model created");
+      }
+      else {
+        throw new Error('Something went wrong');
       }
     })
     .catch((error) => {
@@ -408,6 +428,9 @@ export const TodoPage = () => {
         if(response.ok) {
           return response.blob()
         }
+        else {
+          throw new Error('Something went wrong');
+        }
       }).then(blob => {
         var url = window.URL || window.webkitURL;
         var src = url.createObjectURL(blob);
@@ -483,6 +506,8 @@ class My3DModelsScreen extends React.Component {
       if(response.ok) {
         console.log("models ok");
         return response.json()
+      } else {
+        throw new Error('Something went wrong');
       }
     }).then(data =>
       this.setState({
@@ -502,6 +527,9 @@ class My3DModelsScreen extends React.Component {
         console.log("Model was successfuly deleted");
         return response.json()
       }
+      else {
+        throw new Error('Something went wrong');
+      }
     }).then(data => {
       newModels = this.state.models.filter(
         function(model){ return model.name !== modelName });
@@ -517,6 +545,7 @@ class My3DModelsScreen extends React.Component {
       //   models: newModels,
       // })
     }
+    // <img src={require( `${ model.img_url }` )} className="rounded float-left"  width="300px" height="168px" alt={model.name}/>
 
     render() {
       return(
@@ -529,7 +558,8 @@ class My3DModelsScreen extends React.Component {
                   <div className="m-4 p-4 border-bottom text-left">
                   <div className="row">
                     <div className="col">
-                    <img src={model.img_url} className="rounded float-left" width="300px" height="168px"/>
+                    <img src={model.img_url} className="rounded float-left"  width="300px" height="168px" alt={model.name}/>
+
                       <div className="pl-3 float-left">
                         <h4 className="font-weight-light">{model.name}</h4>
                         <ul class="list-group list-group-flush">
