@@ -214,7 +214,7 @@ def create_3d_model():
 
 def covert_to_obj(mesh, obj_url):
     o3d.io.write_triangle_mesh(obj_url,
-                               mesh, write_triangle_uvs=True, write_vertex_colors=True, print_progress=True)
+                               mesh, write_triangle_uvs=True, print_progress=True)
 # covert_to_obj(create_3d_model(), "elasda")
 
 
