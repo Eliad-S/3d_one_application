@@ -1,7 +1,6 @@
 import numpy as np
-import open3d
-from open3d.cpu.pybind.io import read_point_cloud
-from open3d.cpu.pybind.visualization import draw_geometries
+# from open3d.cpu.pybind.io import read_point_cloud
+# from open3d.cpu.pybind.visualization import draw_geometries
 import open3d as o3d
 import copy
 import trimesh
@@ -21,13 +20,13 @@ def serve_pil_image(pil_img):
 def ply_to_point_cloud(file):
     # Read the point cloud
 
-    pcd = read_point_cloud(file)
+    pcd = o3d.io.read_point_cloud(file)
     pcd.estimate_normals()
     return pcd
 
 
 def draw_point_cloud(cloud):
-    draw_geometries([cloud])  # Visualize the point cloud
+    o3d.visualization.draw_geometries([cloud])  # Visualize the point cloud
 
 
 def from_pcd_to_ply_file(pcd):
@@ -215,7 +214,7 @@ def create_3d_model():
 
 def covert_to_obj(mesh, obj_url):
     o3d.io.write_triangle_mesh(obj_url,
-                               mesh, write_ascii=True)
+                               mesh, write_triangle_uvs=True, write_vertex_colors=True, print_progress=True)
 # covert_to_obj(create_3d_model(), "elasda")
 
 
@@ -248,3 +247,5 @@ def convert_3d_to_2d(mesh, img_url):
 # pcd.points = open3d.utility.Vector3dVector(np_points)
 # draw_point_cloud(pcd)
 # from_pcd_to_ply_file(pcd)
+# copy_textured_mesh = o3d.io.read_triangle_mesh('../public/my_models/papa.obj')
+# draw_point_cloud(copy_textured_mesh)
