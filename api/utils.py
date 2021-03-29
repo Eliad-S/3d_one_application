@@ -48,8 +48,9 @@ def rotate_point_cloud(cloud, frame_number):
 
 
 def point_of_origin(cloud):
+    from api import setting_manager
     center = o3d.geometry.PointCloud.get_center(cloud)
-    center[2] += OBJECT_DISTANCE
+    center[2] += setting_manager.get_val("obj_distance")
     # open3d.geometry.PointCloud.rotate( , ,center)
     mesh = cloud
     mesh_mv = copy.deepcopy(mesh).translate(center, relative=False)
