@@ -141,6 +141,49 @@ def get_setting():
         return make_response(jsonify(error), 404)
 
 
+@app.route('/settings/number_of_frames/<int:number_of_frames>', methods=['GET'])
+def set_frames(number_of_frames):
+    try:
+        setting_manager.modify_val("number_of_frames", number_of_frames)
+        return make_response(f'number_of_frames has changed to {number_of_frames}', 200)
+    except Exception as error:
+        print(error)
+        return make_response("error occured while changing value", 404)
+
+
+@app.route('/settings/obj_distance/<float:obj_distance>', methods=['GET'])
+def set_obj_distance(obj_distance):
+    try:
+        setting_manager.modify_val("obj_distance", obj_distance)
+        return make_response(f'obj_distance has changed to {obj_distance}', 200)
+    except Exception as error:
+        print(error)
+        return make_response("error occured while changing value", 404)
+
+
+@app.route('/settings/obj_radius/<float:obj_radius>', methods=['GET'])
+def set_obj_radius(obj_radius):
+    try:
+        setting_manager.modify_val("obj_radius", obj_radius)
+        return make_response(f'obj_radius has changed to {obj_radius}', 200)
+    except Exception as error:
+        print(error)
+        return make_response("error occured while changing value", 404)
+
+
+@app.route('/settings/voice_control/<int:voice_control>', methods=['GET'])
+def set_voice_control(voice_control):
+    try:
+        if voice_control:
+            setting_manager.modify_val("voice_control", True)
+        else:
+            setting_manager.modify_val("voice_control", False)
+        return make_response(f'voice_control has changed to {voice_control}', 200)
+    except Exception as error:
+        print(error)
+        return make_response("error occured while changing value", 404)
+
+
 @app.route('/models/create/<name>', methods=['GET'])
 def create_model(name=None):
     global obj_url, img_url
