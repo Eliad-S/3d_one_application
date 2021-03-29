@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import logo from './logo.svg';
+// import logo from './logo.svg';
 import './App.css';
 import './bootstrap-4.3.1-dist/css/bootstrap.min.css';
 import scanScreenIcon from './images/camera_enhance-black-48dp.svg';
@@ -356,23 +356,23 @@ class ScanScreen extends React.Component {
             {this.state.currentlyScanning ?
               <>
                 <button type="button" class="btn btn-dark" onClick={this.restartScan}>
-                  <img src={restartIcon} />&nbsp;
+                  <img src={restartIcon} alt="Restart" />&nbsp;
             Restart Scan
             </button> &nbsp;
             <button type="button" class="btn btn-danger" onClick={this.scanning}>
-                  <img src={cancelIcon} />&nbsp;
+                  <img src={cancelIcon} alt="Cancel" />&nbsp;
             Cancel Scan
             </button>
               </>
               :
               <button type="button" class="btn btn-success" onClick={this.scanning}>
-                <img src={addIcon} />&nbsp;
+                <img src={addIcon} alt="Scan" />&nbsp;
               Scan a New Object
               </button>
             }
           </div>
         </div>
-        <img id="frame" />
+        {/* <img id="frame" /> */}
         <div className="row">
           <div className="col pt-5">
             {this.state.currentlyScanning && this.state.connectedToServer ?
@@ -427,7 +427,7 @@ class ScanScreen extends React.Component {
               <div>
                 <h5 className="text-secondary font-weight-light">Ready to 3D scan your object?</h5>
                 <h6 className="text-secondary font-weight-light">Click "Scan a New Object"</h6>
-                <img src={scanScreenIcon} />
+                <img src={scanScreenIcon} alt="Scan" />
               </div>
               : ''}
           </div>
@@ -630,7 +630,7 @@ class My3DModelsScreen extends React.Component {
             ) : <div>
               {this.state.isLoading ? <img src={loadingGIF} alt="Loading" /> :
                 <button type="button" className="btn btn-dark mb-2" onClick={() => this.setState({ spesificModel: null })}>
-                  <img src={cancelIcon} />&nbsp;
+                  <img src={cancelIcon} alt="Exit" />&nbsp;
               Exit 3D Model View
               </button>}
               <div>
@@ -775,7 +775,7 @@ class SettingsScreen extends React.Component {
                 <input className="w-75 mr-2" type="range" id="number_of_frames" name="points" step="2"
                   defaultValue={this.state.settings.number_of_frames} min="2" max="8" onChange={this.handleObjParamsChange} /> {this.state.number_of_frames}
                 <br />
-                <small>4 is the recommended number of frames</small>
+                <small>4 is the recommended number of frames.</small>
               </div>
             </div>
 
