@@ -611,7 +611,7 @@ class My3DModelsScreen extends React.Component {
                       <div className="pl-3 float-left">
                         <h4 className="font-weight-light">{model.name}</h4>
                         <ul class="list-group list-group-flush">
-                          <li class="list-group-item"><button class="btn btn-primary" onClick={() => {this.setState({spesificModel: model.model_url})}}>View 3D Model</button></li>
+                          <li class="list-group-item"><button class="btn btn-primary" onClick={() => { this.setState({ spesificModel: model.model_url }) }}>View 3D Model</button></li>
                           <li class="list-group-item">Scanned at {model.creation_date}</li>
                           <li class="list-group-item">Size: {model.size}</li>
                           <li class="list-group-item">Share</li>
@@ -628,15 +628,15 @@ class My3DModelsScreen extends React.Component {
               );
             }
             ) : <div>
-              {this.state.isLoading ? <img src={loadingGIF} alt="Loading"/> : 
-              <button type="button" className="btn btn-dark mb-2" onClick={() => this.setState({spesificModel: null})}>
+              {this.state.isLoading ? <img src={loadingGIF} alt="Loading" /> :
+                <button type="button" className="btn btn-dark mb-2" onClick={() => this.setState({ spesificModel: null })}>
                   <img src={cancelIcon} />&nbsp;
               Exit 3D Model View
               </button>}
-            <div>
-              <OBJModel src={this.state.spesificModel} alt='3D Model' width="1400" height="800"
-               onProgress={() => {this.setState({isLoading: true}); console.log("loading")}}  onLoad={() => {this.setState({isLoading: false}); console.log("done")}} /> 
-            </div></div>}
+              <div>
+                <OBJModel src={this.state.spesificModel} alt='3D Model' width="1400" height="800"
+                  onProgress={() => { this.setState({ isLoading: true }); console.log("loading") }} onLoad={() => { this.setState({ isLoading: false }); console.log("done") }} />
+              </div></div>}
           </div>
         </div>
       </div>
@@ -649,8 +649,11 @@ class SettingsScreen extends React.Component {
     super(props);
     this.state = {
       settings: props.settings,
+      obj_radius: props.settings['obj_radius'],
+      number_of_frames: props.settings['number_of_frames']
     };
     this.handleVoiceControlChange = this.handleVoiceControlChange.bind(this);
+    this.handleObjParamsChange = this.handleObjParamsChange.bind(this);
   }
 
   // componentWillReceiveProps(settings) {
@@ -661,12 +664,43 @@ class SettingsScreen extends React.Component {
     this.props.onChildClick(key, value)
   }
 
+  handleObjParamsChange(event) {
+    let key = event.target.id;
+    let value = event.target.value;
+    value = Number.parseFloat(value).toFixed(2)
+    console.log(value)
+    if (key === "obj_radius") {
+      this.setState({
+        obj_radius: value,
+      })
+    }
+    if (key === "number_of_frames") {
+      this.setState({
+        number_of_frames: value,
+      })
+    }
+    fetch('/settings/' + key + '/' + value).then(response => {
+      // console.log(response.ok)
+      if (response.ok) {
+        return response
+      }
+      else {
+        throw new Error('Something went wrong');
+      }
+    }).then(data => {
+      // console.log(data)
+      this.updateSettings(key, value);
+    })
+      .catch((error) => {
+        console.error('Error:', error);
+      })
+  }
+
   handleVoiceControlChange(event) {
     let value = event.target.checked;
     let new_val;
-        console.log(value)
-            if (value) {
-              new_val = 1;
+    if (value) {
+      new_val = 1;
     }
     else {
       new_val = 0;
@@ -690,9 +724,9 @@ class SettingsScreen extends React.Component {
       // console.log(data)
       this.updateSettings("voice_control", value);
     })
-    .catch((error) => {
-      console.error('Error:', error);
-    })
+      .catch((error) => {
+        console.error('Error:', error);
+      })
   }
 
   render() {
@@ -704,12 +738,11 @@ class SettingsScreen extends React.Component {
             <div class="row m-4 p-4 border-bottom">
               <div class="col-3 text-right">
                 <label class="form-check-label" for="voiceCapture">
-                  Enable Voice Control
-                  {console.log(this.state.settings.voice_control)}
-                  </label>
+                  Enable Voice Control:
+                </label>
               </div>
               <div className="col-3 float-left text-left">
-                <input class="form-check-input" type="checkbox" id="voice_control" onClick={this.handleVoiceControlChange} checked={this.state.settings.voice_control} />
+                <input class="form-check-input" type="checkbox" id="voice_control" onClick={this.handleVoiceControlChange} defaultChecked={this.state.settings.voice_control} />
                 <small>Use Voice Control to capture frames using your voice. Whenever scanning you may say "capture" instead of pressing "capture" button.</small>
               </div>
             </div>
@@ -718,8 +751,8 @@ class SettingsScreen extends React.Component {
                 <label for="points">Object's Center Distance From Camera in Meters:</label>
               </div>
               <div className="col-3 float-left text-left">
-                <input name="radius" type="number" id="radiusInput" step="0.01" className="form-control"
-                  placeholder="0.5" onChange={this.onInputChange} ref={el => this.radius = el} required />
+                <input name="radius" type="number" id="obj_distance" step="0.01" className="form-control"
+                  placeholder={this.state.settings.obj_distance} defaultValue={this.state.settings.obj_distance} onChange={this.handleObjParamsChange} ref={el => this.radius = el} required />
                 <small>Accurate input will result a finer merge of all frames.</small>
               </div>
             </div>
@@ -728,11 +761,24 @@ class SettingsScreen extends React.Component {
                 <label for="points">Object Radius:</label>
               </div>
               <div className="col-3 float-left text-left">
-                <input className="w-100" type="range" id="points" name="points" step="0.1" defaultValue="0.5" min="0.5" max="3" />
+                <input className="w-75 mr-2" type="range" id="obj_radius" name="points" step="0.05"
+                  defaultValue={this.state.obj_radius} min="0.1" max="3" onChange={this.handleObjParamsChange} /> {this.state.obj_radius}
                 <br />
-                <small>Accurate input will result a finer cropping of the object.</small>
+                <small>Accurate input will result a finer cropping of the object from it's environment.</small>
               </div>
             </div>
+            <div class="row m-4 p-4 border-bottom">
+              <div class="col-3 text-right">
+                <label for="points">Number of Frames:</label>
+              </div>
+              <div className="col-3 float-left text-left">
+                <input className="w-75 mr-2" type="range" id="number_of_frames" name="points" step="2"
+                  defaultValue={this.state.settings.number_of_frames} min="2" max="8" onChange={this.handleObjParamsChange} /> {this.state.number_of_frames}
+                <br />
+                <small>4 is the recommended number of frames</small>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
