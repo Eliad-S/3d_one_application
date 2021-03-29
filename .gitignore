@@ -5,6 +5,7 @@
 /.pnp
 .pnp.js
 venv
+.idea/
 # testing
 /coverage
 
@@ -22,3 +23,7 @@ __pycache__
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+public/my_models/
+*.ply
+api/dbdir/models.db
