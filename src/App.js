@@ -63,7 +63,14 @@ class Container extends React.Component {
   }
 
   updateSettings(key, value) {
-    this.state.settings[key] = value;
+    console.log(key + ": " + value)
+    console.log(this.state.settings)
+    let newSettings = this.state.settings;
+    newSettings[key] = value;
+    console.log(newSettings)
+    this.setState({
+      settings: newSettings
+    }, console.log(this.state.settings))
   }
 
   renderScreens() {
@@ -400,7 +407,7 @@ class ScanScreen extends React.Component {
                       <div className="ml-3 text-left">
                         <h5 className="font-weight-normal justify-content-start">{this.state.numberOfFramesCaptured}/{this.state.settings.settings.number_of_frames} frames were captured
                 <h6 className="font-weight-light"> Press "Capture Frame" and turn the object 90° clockwise</h6>
-                          {this.state.settings.settings.voice_control ? <><img src={micIcon} alt="Mic Icon" /><h6 className="font-weight-light">Voice Control is on, say "capture"</h6></> : ''}
+                          {this.state.settings.settings.voice_control ? <><img src={micIcon} alt="Mic Icon" /><h6 className="font-weight-light">Voice Control is onLoad=, say "capture"</h6></> : ''}
                         </h5>
                       </div>
                       {console.log(this.state.settings.settings.number_of_frames)}
@@ -533,6 +540,8 @@ class My3DModelsScreen extends React.Component {
     super(props);
     this.state = {
       models: [],
+      spesificModel: null,
+      isLoading: true,
     };
   }
 
@@ -591,7 +600,8 @@ class My3DModelsScreen extends React.Component {
         <div class="row">
           <div class="col">
             <h1 className="text-left font-weight-light">My 3D Models</h1>
-            {this.state.models.map(model => {
+
+            {this.state.spesificModel === null ? this.state.models.map(model => {
               return (
                 <div className="m-4 p-4 border-bottom text-left">
                   <div className="row">
@@ -601,13 +611,12 @@ class My3DModelsScreen extends React.Component {
                       <div className="pl-3 float-left">
                         <h4 className="font-weight-light">{model.name}</h4>
                         <ul class="list-group list-group-flush">
-                          <li class="list-group-item"><button class="btn btn-primary">View 3D Model</button></li>
+                          <li class="list-group-item"><button class="btn btn-primary" onClick={() => {this.setState({spesificModel: model.model_url})}}>View 3D Model</button></li>
                           <li class="list-group-item">Scanned at {model.creation_date}</li>
                           <li class="list-group-item">Size: {model.size}</li>
                           <li class="list-group-item">Share</li>
                         </ul>
                       </div>
-                      <OBJModel src={model.model_url} alt={model.name} />
                     </div>
                     <div className="col">
                       <button type="button" className="btn bg-danger p-1 rounded float-right" onClick={(event) => this.deleteModel(model.name)}>
@@ -618,7 +627,16 @@ class My3DModelsScreen extends React.Component {
                 </div>
               );
             }
-            )}
+            ) : <div>
+              {this.state.isLoading ? <img src={loadingGIF} alt="Loading"/> : 
+              <button type="button" className="btn btn-dark mb-2" onClick={() => this.setState({spesificModel: null})}>
+                  <img src={cancelIcon} />&nbsp;
+              Exit 3D Model View
+              </button>}
+            <div>
+              <OBJModel src={this.state.spesificModel} alt='3D Model' width="1400" height="800"
+               onProgress={() => {this.setState({isLoading: true}); console.log("loading")}}  onLoad={() => {this.setState({isLoading: false}); console.log("done")}} /> 
+            </div></div>}
           </div>
         </div>
       </div>
@@ -632,31 +650,45 @@ class SettingsScreen extends React.Component {
     this.state = {
       settings: props.settings,
     };
+    this.handleVoiceControlChange = this.handleVoiceControlChange.bind(this);
   }
 
-  updateSettings(event) {
-    let key = this.event.target.id;
-    let value = this.event.target.value;
+  // componentWillReceiveProps(settings) {
+  //   this.setState({ settings: settings });
+  // }
+
+  updateSettings(key, value) {
     this.props.onChildClick(key, value)
   }
 
   handleVoiceControlChange(event) {
-    let checked;
-    if (event.target.value) {
-      checked = 1;
+    let value = event.target.checked;
+    let new_val;
+        console.log(value)
+            if (value) {
+              new_val = 1;
     }
     else {
-      checked = 0;
+      new_val = 0;
     }
-    fetch('/settings/voice_control/' + checked).then(response => {
+    // let newSettings = this.state.settings;
+    // newSettings['voice_control'] = value;
+    // console.log(newSettings)
+    // this.setState({
+    //   settings: newSettings
+    // }, console.log(this.state.settings))
+
+    fetch('/settings/voice_control/' + new_val).then(response => {
+      // console.log(response.ok)
       if (response.ok) {
-        return response.json()
+        return response
       }
       else {
         throw new Error('Something went wrong');
       }
     }).then(data => {
-      this.updateSettings(event);
+      // console.log(data)
+      this.updateSettings("voice_control", value);
     })
     .catch((error) => {
       console.error('Error:', error);
@@ -673,10 +705,11 @@ class SettingsScreen extends React.Component {
               <div class="col-3 text-right">
                 <label class="form-check-label" for="voiceCapture">
                   Enable Voice Control
+                  {console.log(this.state.settings.voice_control)}
                   </label>
               </div>
               <div className="col-3 float-left text-left">
-                <input class="form-check-input" type="checkbox" defaultChecked={true} id="voice_control" onClick={this.handleVoiceControlChange} value={this.state.settings.settings.voice_control}/>
+                <input class="form-check-input" type="checkbox" id="voice_control" onClick={this.handleVoiceControlChange} checked={this.state.settings.voice_control} />
                 <small>Use Voice Control to capture frames using your voice. Whenever scanning you may say "capture" instead of pressing "capture" button.</small>
               </div>
             </div>
