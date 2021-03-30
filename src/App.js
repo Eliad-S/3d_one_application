@@ -2,9 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 // import logo from './logo.svg';
 import './App.css';
 import './bootstrap-4.3.1-dist/css/bootstrap.min.css';
-import scanScreenIcon from './images/camera_enhance-black-48dp.svg';
-import ModelsScreenIcon from './images/book-black-48dp.svg';
-import settingsScreenIcon from './images/settings-black-48dp.svg';
+import scanScreenIcon from './images/camera_icon.svg';
+import ModelsScreenIcon from './images/models_icon.svg';
+import settingsScreenIcon from './images/settings_icon.svg';
+import scanScreenIconWhite from './images/camera_icon_white.svg';
+import ModelsScreenIconWhite from './images/models_icon_white.svg';
+import settingsScreenIconWhite from './images/settings_icon_white.svg';
 import addIcon from './images/add-white-24dp.svg';
 import cancelIcon from './images/clear-white-24dp.svg';
 import restartIcon from './images/restart_alt-white-24dp.svg'
@@ -126,7 +129,7 @@ class Menu extends React.Component {
     });
   }
 
-  renderMenuButton(name, icon, id) {
+  renderMenuButton(name, icon, iconWhite, id) {
     return (
       <>
         {this.state.pressed_button === id ?
@@ -134,7 +137,7 @@ class Menu extends React.Component {
             onClick={this.buttonClick}>
             {name}
             <br />
-            <img id={id} src={icon} alt={id} />
+            <img id={id} src={iconWhite} alt={id} />
           </button>
           :
           <button id={id} type="button" className="btn btn-light btn-lg w-100 shadow-sm mb-3 bg-white rounded font-weight-light nav-item "
@@ -153,10 +156,10 @@ class Menu extends React.Component {
         <div class="collapse navbar-collapse" id="navbarsExampleDefault">
           <h1 className="font-weight-light">3D One</h1>
           <ul class="navbar-nav">
-            {this.renderMenuButton("Scan", scanScreenIcon, "scan")}
-            {this.renderMenuButton("My 3D Models", ModelsScreenIcon, "my3DModels")}
+            {this.renderMenuButton("Scan", scanScreenIcon, scanScreenIconWhite, "scan")}
+            {this.renderMenuButton("My 3D Models", ModelsScreenIcon, ModelsScreenIconWhite, "my3DModels")}
             <div className="">
-              {this.renderMenuButton("Settings", settingsScreenIcon, "settings")}
+              {this.renderMenuButton("Settings", settingsScreenIcon, settingsScreenIconWhite, "settings")}
             </div>
             {/*        <li class="nav-item">
                 <a class="nav-link" data-class="fixed-left">
@@ -687,7 +690,9 @@ class SettingsScreen extends React.Component {
   handleObjParamsChange(event) {
     let key = event.target.id;
     let value = event.target.value;
-    value = Number.parseFloat(value).toFixed(2)
+    if(key != "number_of_frames") {
+      value = Number.parseFloat(value).toFixed(2)
+    }
     console.log(value)
     if (key === "obj_radius") {
       this.setState({
