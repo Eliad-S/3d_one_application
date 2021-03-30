@@ -405,11 +405,7 @@ class ScanScreen extends React.Component {
                         </div>
                       </div>
                     </div> :
-                      <div>
-                        <img src={loadingGIF} alt="Loading..." />
-                        <br />
-                        Creating 3D Model
-                      </div>
+                      <div><img src={loadingGIF} alt="Loading" /> <br /> <h4 className="font-weight-light mt-3"> Loading 3D Model</h4></div>
                     }
                   </div>
                   :
@@ -431,10 +427,7 @@ class ScanScreen extends React.Component {
                 }
               </> : ''}
             {this.state.currentlyScanning && !this.state.connectedToServer ?
-              <>
-                <h4>waiting for server</h4>
-                <img src={loadingGIF} alt="Loading..." />
-              </>
+              <div><img src={loadingGIF} alt="Loading" /> <br /> <h4 className="font-weight-light mt-3">Waiting for Server</h4></div>
               : ''}
             {!this.state.currentlyScanning ?
               <div>
@@ -613,7 +606,7 @@ class My3DModelsScreen extends React.Component {
         <div className="row">
           <div class="col">
             <h1 className="text-left font-weight-light">My 3D Models</h1>
-            {this.state.spesificModel === null ? this.state.models.map(model => {
+            {this.state.spesificModel === null ? this.state.models.reverse().map((model, index) => {
               return (
                 <div className="m-4 p-4 border-bottom text-left">
                   <div className="row">
@@ -623,10 +616,10 @@ class My3DModelsScreen extends React.Component {
                       <div className="pl-3 float-left">
                         <h3 className="font-weight-light">{model.name}</h3>
                         <ul class="list-group list-group-flush">
-                          <li class="list-group-item"><button class="btn btn-primary" onClick={() => { this.setState({ spesificModel: model.model_url }) }}>View 3D Model</button></li>
+                          <li class="list-group-item"><button class="btn btn-primary" onClick={() => { this.setState({ spesificModel: this.state.models[index] }) }}>View 3D Model</button></li>
                           <li class="list-group-item">Scanned at {model.creation_date}</li>
                           <li class="list-group-item">Size: {model.size}</li>
-                          <li class="list-group-item">Share</li>
+                          <li class="list-group-item">Captured using {model.number_of_frames} frames</li>
                         </ul>
                       </div>
                     </div>
@@ -641,12 +634,21 @@ class My3DModelsScreen extends React.Component {
             }
             ) : <div>
               {this.state.isLoading ? <div><img src={loadingGIF} alt="Loading" /> <br /> <h4 className="font-weight-light mt-3"> Loading 3D Model</h4></div> :
-                <button type="button" className="btn btn-dark mb-2" onClick={() => this.setState({ spesificModel: null })}>
-                  <img src={cancelIcon} alt="Exit" />&nbsp;
-              Exit 3D Model View
-              </button>}
+                <div class="row">
+                  <div class="col">
+                    <h3 className="font-weight-light float-left">{this.state.spesificModel.name}</h3>
+                  </div>
+                  <div className="col">
+                    <div className="float-right">
+                      <button type="button" className="btn btn-dark mb-2" onClick={() => this.setState({ spesificModel: null })}>
+                        <img src={cancelIcon} alt="Exit" />&nbsp;
+                        Exit 3D Model View
+                      </button>
+                    </div>
+                  </div>
+                </div>}
               <div>
-                <OBJModel src={this.state.spesificModel} alt='3D Model' width="1400" height="800"
+                <OBJModel src={this.state.spesificModel.model_url} alt='3D Model' width="1400" height="800"
                   onProgress={() => { this.setState({ isLoading: true }); console.log("loading") }} onLoad={() => { this.setState({ isLoading: false }); console.log("done") }} />
                 {/* <DAEModel src="my_models/idan.dae" alt='3D Model' width="1400" height="800"
                   onProgress={() => { this.setState({ isLoading: true }); console.log("loading") }} onLoad={() => { this.setState({ isLoading: false }); console.log("done") }} /> */}
