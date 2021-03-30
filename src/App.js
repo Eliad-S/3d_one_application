@@ -13,7 +13,7 @@ import './fixed-left.css';
 import Chart from '../node_modules/chart.js/dist/Chart.js';
 import deleteIcon from './images/delete-white-24dp.svg'
 import micIcon from './images/mic-black-24dp.svg'
-import { OBJModel } from 'react-3d-viewer'
+import { OBJModel, JSONModel, Tick, MTLModel, DAEModel } from 'react-3d-viewer'
 // import eliad from '../public/e.obj'
 // import eliad from '../api/eliad sellem(1).jpg'
 
@@ -600,7 +600,6 @@ class My3DModelsScreen extends React.Component {
         <div class="row">
           <div class="col">
             <h1 className="text-left font-weight-light">My 3D Models</h1>
-
             {this.state.spesificModel === null ? this.state.models.map(model => {
               return (
                 <div className="m-4 p-4 border-bottom text-left">
@@ -634,8 +633,14 @@ class My3DModelsScreen extends React.Component {
               Exit 3D Model View
               </button>}
               <div>
-                <OBJModel src={this.state.spesificModel} alt='3D Model' width="1400" height="800"
-                  onProgress={() => { this.setState({ isLoading: true }); console.log("loading") }} onLoad={() => { this.setState({ isLoading: false }); console.log("done") }} />
+                {/* <OBJModel src={this.state.spesificModel} alt='3D Model' width="1400" height="800"
+                  onProgress={() => { this.setState({ isLoading: true }); console.log("loading") }} onLoad={() => { this.setState({ isLoading: false }); console.log("done") }} /> */}
+                          {/* <DAEModel src="my_models/idan.dae" alt='3D Model' width="1400" height="800"
+                  onProgress={() => { this.setState({ isLoading: true }); console.log("loading") }} onLoad={() => { this.setState({ isLoading: false }); console.log("done") }} /> */}
+                                        <MTLModel src={this.state.spesificModel} mtl="my_models/idan.mtl"  alt='3D Model' width="1400" height="800" 
+              onProgress={() => { this.setState({ isLoading: true }); console.log("loading") }} onLoad={() => { this.setState({ isLoading: false }); console.log("done") }}/>
+
+
               </div></div>}
           </div>
         </div>
