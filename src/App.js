@@ -18,6 +18,7 @@ import { OBJModel, JSONModel, Tick, MTLModel, DAEModel } from 'react-3d-viewer'
 // import eliad from '../api/eliad sellem(1).jpg'
 
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition'
+import { nodeName } from 'jquery';
 
 
 
@@ -190,6 +191,7 @@ class ScanScreen extends React.Component {
       connectedToServer: false,
       settings: props.settings,
       numberOfFramesCaptured: 0,
+      isCreatingModel: false,
     };
     this.scanning = this.scanning.bind(this);
     this.capture = this.capture.bind(this);
@@ -297,6 +299,9 @@ class ScanScreen extends React.Component {
 
   createModel() {
     console.log(this.modelName.value)
+    this.setState({
+      isCreatingModel: true
+    })
     fetch('/models/create/' + this.modelName.value, {
     }).then(response => {
       if (response.ok) {
@@ -326,6 +331,7 @@ class ScanScreen extends React.Component {
         currentlyScanning: false,
         connectedToServer: false,
         numberOfFramesCaptured: 0,
+        isCreatingModel: false,
       })
     )
       .catch((error) => {
@@ -385,20 +391,27 @@ class ScanScreen extends React.Component {
               // })
               <>
                 {this.state.numberOfFramesCaptured === this.state.settings.settings.number_of_frames ?
-                  <div class="modal-dialog shadow" role="document">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h5 class="modal-title">Enter a name for the model</h5>
+                  <div>
+                    {this.state.isCreatingModel === false ? <div class="modal-dialog shadow" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title">Enter a name for the model</h5>
+                        </div>
+                        <div class="modal-body">
+                          <input class="form-control" type="text" placeholder="Name goes here" ref={(c) => this.modelName = c} name="modelName" ></input>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-primary" onClick={this.createModel}>Create 3D Model</button>
+                        </div>
                       </div>
-                      <div class="modal-body">
-                        <input class="form-control" type="text" placeholder="Name goes here" ref={(c) => this.modelName = c} name="modelName" ></input>
+                    </div> :
+                      <div>
+                        <img src={loadingGIF} alt="Loading..." />
+                        <br />
+                        Creating 3D Model
                       </div>
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" onClick={this.createModel}>Create 3D Model</button>
-                      </div>
-                    </div>
+                    }
                   </div>
-
                   :
                   <>
                     <button type="button" className="btn btn-primary btn-lg font-weight-light float-left" onClick={this.capture}>Capture Frame</button>
@@ -425,8 +438,8 @@ class ScanScreen extends React.Component {
               : ''}
             {!this.state.currentlyScanning ?
               <div>
-                <h5 className="text-secondary font-weight-light">Ready to 3D scan your object?</h5>
-                <h6 className="text-secondary font-weight-light">Click "Scan a New Object"</h6>
+                <h3 className="text-secondary font-weight-light">Ready to 3D scan your object?</h3>
+                <h4 className="text-secondary font-weight-light">Click "Scan a New Object"</h4>
                 <img src={scanScreenIcon} alt="Scan" />
               </div>
               : ''}
@@ -597,7 +610,7 @@ class My3DModelsScreen extends React.Component {
   render() {
     return (
       <div id="container" className="container-fluid p-3">
-        <div class="row">
+        <div className="row">
           <div class="col">
             <h1 className="text-left font-weight-light">My 3D Models</h1>
             {this.state.spesificModel === null ? this.state.models.map(model => {
@@ -608,7 +621,7 @@ class My3DModelsScreen extends React.Component {
                       <img src={model.img_url} className="rounded float-left" width="300px" height="168px" alt={model.name} />
 
                       <div className="pl-3 float-left">
-                        <h4 className="font-weight-light">{model.name}</h4>
+                        <h3 className="font-weight-light">{model.name}</h3>
                         <ul class="list-group list-group-flush">
                           <li class="list-group-item"><button class="btn btn-primary" onClick={() => { this.setState({ spesificModel: model.model_url }) }}>View 3D Model</button></li>
                           <li class="list-group-item">Scanned at {model.creation_date}</li>
@@ -627,18 +640,18 @@ class My3DModelsScreen extends React.Component {
               );
             }
             ) : <div>
-              {this.state.isLoading ? <img src={loadingGIF} alt="Loading" /> :
+              {this.state.isLoading ? <div><img src={loadingGIF} alt="Loading" /> <br /> <h4 className="font-weight-light mt-3"> Loading 3D Model</h4></div> :
                 <button type="button" className="btn btn-dark mb-2" onClick={() => this.setState({ spesificModel: null })}>
                   <img src={cancelIcon} alt="Exit" />&nbsp;
               Exit 3D Model View
               </button>}
               <div>
-                {/* <OBJModel src={this.state.spesificModel} alt='3D Model' width="1400" height="800"
+                <OBJModel src={this.state.spesificModel} alt='3D Model' width="1400" height="800"
+                  onProgress={() => { this.setState({ isLoading: true }); console.log("loading") }} onLoad={() => { this.setState({ isLoading: false }); console.log("done") }} />
+                {/* <DAEModel src="my_models/idan.dae" alt='3D Model' width="1400" height="800"
                   onProgress={() => { this.setState({ isLoading: true }); console.log("loading") }} onLoad={() => { this.setState({ isLoading: false }); console.log("done") }} /> */}
-                          {/* <DAEModel src="my_models/idan.dae" alt='3D Model' width="1400" height="800"
+                {/* <MTLModel src={this.state.spesificModel} mtl="my_models/idan.mtl" alt='3D Model' width="1400" height="800"
                   onProgress={() => { this.setState({ isLoading: true }); console.log("loading") }} onLoad={() => { this.setState({ isLoading: false }); console.log("done") }} /> */}
-                                        <MTLModel src={this.state.spesificModel} mtl="my_models/idan.mtl"  alt='3D Model' width="1400" height="800" 
-              onProgress={() => { this.setState({ isLoading: true }); console.log("loading") }} onLoad={() => { this.setState({ isLoading: false }); console.log("done") }}/>
 
 
               </div></div>}
@@ -681,7 +694,7 @@ class SettingsScreen extends React.Component {
     }
     if (key === "number_of_frames") {
       this.setState({
-        number_of_frames: value,
+        number_of_frames: event.target.value,
       })
     }
     fetch('/settings/' + key + '/' + value).then(response => {
