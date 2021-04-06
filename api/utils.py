@@ -5,9 +5,9 @@ import open3d as o3d
 import copy
 import trimesh
 from io import BytesIO
+from setting_manager import Setting_Manager
+setting_manager = Setting_Manager()
 
-NUMBER_OF_CAPTURES = 4
-OBJECT_DISTANCE = 0.63
 
 
 def serve_pil_image(pil_img):
@@ -47,10 +47,8 @@ def rotate_point_cloud(cloud, frame_number):
 
 
 def point_of_origin(cloud):
-    from api import setting_manager
     center = o3d.geometry.PointCloud.get_center(cloud)
     center[2] += setting_manager.get_val("obj_distance")
-    # open3d.geometry.PointCloud.rotate( , ,center)
     mesh = cloud
     mesh_mv = copy.deepcopy(mesh).translate(center, relative=False)
     print(f'Center of mesh: {mesh.get_center()}')
@@ -67,7 +65,7 @@ def crop_point_cloud(cloud):
 
 
 def crop_dinamically(cloud):
-    radius = 0.35
+    radius = setting_manager.get_val("obj_radius")
     min_height = -0.4
     max_height = 0.4
     corners = np.array([[radius, max_height, radius],
@@ -104,17 +102,6 @@ def crop_dinamically(cloud):
     # Crop the point cloud using the Vector3dVector
     cropped_pcd = vol.crop_point_cloud(cloud)
     return cropped_pcd
-    # Get a nice looking bounding box to display around the newly cropped point cloud
-    # (This part is optional and just for display purposes)
-    # bounding_box = cropped_pcd.get_axis_aligned_bounding_box()
-    # bounding_box.color = (1, 0, 0)
-    #
-    # # Draw the newly cropped PCD and bounding box
-    # o3d.visualization.draw_geometries([cropped_pcd, bounding_box],
-    #                                   zoom=2,
-    #                                   front=[5, -2, 0.5],
-    #                                   lookat=[7.67473496, -3.24231903, 0.3062945],
-    #                                   up=[1.0, 0.0, 0.0])
 
 
 def crop(pcd):
@@ -136,7 +123,8 @@ def get_depth_of_object():
 def merge_ply_files():
     pcd = ply_to_point_cloud("1.ply")
     pcd = point_of_origin(pcd)
-    for i in range(2, NUMBER_OF_CAPTURES + 1):
+    number_of_frames = setting_manager.get_val("number_of_frames")
+    for i in range(2, number_of_frames + 1):
         pcd_i = ply_to_point_cloud(f"{i}.ply")
         pcd_i = point_of_origin(pcd_i)
         pcd_i = rotate_point_cloud(pcd_i, i - 1)
@@ -165,11 +153,34 @@ def point_cloud_to_mesh(pcd):
 
 def mesh3(pcd):
     with o3d.utility.VerbosityContextManager(o3d.utility.VerbosityLevel.Debug) as cm:
-        mesh, densities = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(pcd, depth=9)
+        mesh, densities = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(pcd, depth=10)
+
+    mesh.compute_triangle_normals()
     densities = np.asarray(densities)
     print('remove low density vertices')
     vertices_to_remove = densities < np.quantile(densities, 0.015)
     mesh.remove_vertices_by_mask(vertices_to_remove)
+    if mesh.has_textures():
+        print("has texture")
+    else:
+        print("no texture")
+    if mesh.has_triangle_normals():
+        print("has has_triangle_normals")
+    else:
+        print("no has_triangle_normals")
+    if mesh.has_triangle_uvs():
+        print("has has_triangle_uvs")
+    else:
+        print("no has_triangle_uvs")
+    if mesh.has_vertex_colors():
+        print("has has_vertex_colors")
+    else:
+        print("no has_vertex_colors")
+    if mesh.has_vertex_normals():
+        print("has has_vertex_normals")
+    else:
+        print("no has_vertex_normals")
+
     return mesh
 
 
@@ -206,12 +217,18 @@ def create_3d_model():
     # mesh = point_cloud_to_mesh(pcd)
     print("stroopppp")
     cropped_pcd = crop_dinamically(pcd)
-    mesh = mesh3(cropped_pcd)  # change to obj file
+
+    cl, ind = cropped_pcd.remove_statistical_outlier(nb_neighbors=30,
+                                                        std_ratio=2.0)
+    draw_point_cloud(cl)
+    mesh = mesh3(cl)  # change to obj file
     # o3d.io.write_triangle_mesh("copy_of_knot.ply", mesh)
     # copy_textured_mesh = o3d.io.read_triangle_mesh('copy_of_crate.obj')
-    # draw_point_cloud(mesh)
+    draw_point_cloud(mesh)
+
     return mesh
 
+create_3d_model()
 def covert_to_obj(mesh, obj_url):
     o3d.io.write_triangle_mesh(obj_url,
                                mesh, write_triangle_uvs=True, print_progress=True)

@@ -5,13 +5,10 @@ from sqlalchemy.exc import IntegrityError
 from flask import Flask, send_file, jsonify, make_response
 from camera_utils import CameraPipe
 from db_manager import db_session
-from setting_manager import Setting_Manager
 import db_manager
-from utils import covert_to_obj, convert_3d_to_2d
+from utils import covert_to_obj, convert_3d_to_2d, setting_manager
 from hurry.filesize import size
 
-
-setting_manager = Setting_Manager()
 camera = CameraPipe()
 app = Flask(__name__)
 url_base = "../public/my_models"

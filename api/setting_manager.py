@@ -39,7 +39,7 @@ class Setting_Manager:
     def create_defualt_json(self):
         settings = dict()
         settings['number_of_frames'] = 4
-        settings['obj_distance'] = 0.6
+        settings['obj_distance'] = 0.8
         settings['obj_radius'] = 0.35
         settings['voice_control'] = True
 
