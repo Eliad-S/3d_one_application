@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 // import logo from './logo.svg';
 import './App.css';
 import './bootstrap-4.3.1-dist/css/bootstrap.min.css';
+import './stylesheet.css'
 import scanScreenIcon from './images/camera_icon.svg';
 import ModelsScreenIcon from './images/models_icon.svg';
 import settingsScreenIcon from './images/settings_icon.svg';
@@ -39,6 +40,9 @@ class Container extends React.Component {
   }
 
   componentDidMount() {
+    if(this.state.settings !== null) {
+      return;
+    } 
     console.log("settingsss")
     fetch('/settings').then(response => {
       if (response.ok) {
@@ -152,7 +156,7 @@ class Menu extends React.Component {
 
   render() {
     return (
-      <nav className="navbar navbar-expand-md navbar-dark col card shadow pt-3 fixed-left">
+      <nav className="navbar navbar-expand-md navbar-dark col card shadow pt-3 fixed-left menu-bg-color">
         <div class="collapse navbar-collapse" id="navbarsExampleDefault">
           <h1 className="font-weight-light">3D One</h1>
           <ul class="navbar-nav">
@@ -343,6 +347,9 @@ class ScanScreen extends React.Component {
   }
 
   componentWillReceiveProps(settings) {
+    if (settings.settings) {
+      settings = settings.settings;
+    }
     this.setState({ settings: settings });
   }
 
@@ -383,6 +390,7 @@ class ScanScreen extends React.Component {
         </div>
         {/* <img id="frame" /> */}
         <div className="row">
+          {console.log(this.state.settings)}
           <div className="col pt-5">
             {this.state.currentlyScanning && this.state.connectedToServer ?
               // fetch('/feed/aligned')
@@ -393,7 +401,7 @@ class ScanScreen extends React.Component {
               //   document.getElementById('frame').setAttribute('src', img);
               // })
               <>
-                {this.state.numberOfFramesCaptured === this.state.settings.settings.number_of_frames ?
+                {this.state.numberOfFramesCaptured === this.state.settings.number_of_frames ?
                   <div>
                     {this.state.isCreatingModel === false ? <div class="modal-dialog shadow" role="document">
                       <div class="modal-content">
@@ -415,14 +423,14 @@ class ScanScreen extends React.Component {
                   <>
                     <button type="button" className="btn btn-primary btn-lg font-weight-light float-left" onClick={this.capture}>Capture Frame</button>
                     <div className="container float-left d-flex my-auto">
-                      <FramesPieChart numberOfFrames={this.state.settings.settings.number_of_frames} numberOfFramesCaptured={this.state.numberOfFramesCaptured} />
+                      <FramesPieChart numberOfFrames={this.state.settings.number_of_frames} numberOfFramesCaptured={this.state.numberOfFramesCaptured} />
                       <div className="ml-3 text-left">
-                        <h5 className="font-weight-normal justify-content-start">{this.state.numberOfFramesCaptured}/{this.state.settings.settings.number_of_frames} frames were captured
+                        <h5 className="font-weight-normal justify-content-start">{this.state.numberOfFramesCaptured}/{this.state.settings.number_of_frames} frames were captured
                 <h6 className="font-weight-light"> Press "Capture Frame" and turn the object 90° clockwise</h6>
-                          {this.state.settings.settings.voice_control ? <><img src={micIcon} alt="Mic Icon" /><h6 className="font-weight-light">Voice Control is onLoad=, say "capture"</h6></> : ''}
+                          {this.state.settings.voice_control ? <><img src={micIcon} alt="Mic Icon" /><h6 className="font-weight-light">Voice Control is on,  you may say "capture"</h6></> : ''}
                         </h5>
                       </div>
-                      {console.log(this.state.settings.settings.number_of_frames)}
+                      {console.log(this.state.settings.number_of_frames)}
                     </div>
                     <Dictaphone handleSpeech={this.handleSpeechtoText} />
                     {<TodoPage />}
@@ -609,9 +617,9 @@ class My3DModelsScreen extends React.Component {
         <div className="row">
           <div class="col">
             <h1 className="text-left font-weight-light">My 3D Models</h1>
-            {this.state.spesificModel === null ? this.state.models.reverse().map((model, index) => {
+            {this.state.spesificModel === null ? this.state.models.reverse().map((model, index, array) => {
               return (
-                <div className="m-4 p-4 border-bottom text-left">
+                <div key={index} className="m-4 p-4 border-bottom text-left">
                   <div className="row">
                     <div className="col">
                       <img src={model.img_url} className="rounded float-left" width="300px" height="168px" alt={model.name} />
@@ -619,7 +627,7 @@ class My3DModelsScreen extends React.Component {
                       <div className="pl-3 float-left">
                         <h3 className="font-weight-light">{model.name}</h3>
                         <ul class="list-group list-group-flush">
-                          <li class="list-group-item"><button class="btn btn-primary" onClick={() => { this.setState({ spesificModel: this.state.models[index] }) }}>View 3D Model</button></li>
+                          <li class="list-group-item"><button class="btn btn-primary" onClick={() => { this.setState({ spesificModel: this.state.models[array.length - 1 - index] }) }}>View 3D Model</button></li>
                           <li class="list-group-item">Scanned at {model.creation_date}</li>
                           <li class="list-group-item">Size: {model.size}</li>
                           <li class="list-group-item">Captured using {model.number_of_frames} frames</li>
@@ -762,7 +770,7 @@ class SettingsScreen extends React.Component {
             <h1 className="text-left font-weight-light">Settings</h1>
             <div class="row m-4 p-4 border-bottom">
               <div class="col-3 text-right">
-                <label class="form-check-label" for="voiceCapture">
+                <label class="form-check-label" htmlFor="voiceCapture">
                   Enable Voice Control:
                 </label>
               </div>
@@ -773,7 +781,7 @@ class SettingsScreen extends React.Component {
             </div>
             <div class="row m-4 p-4 border-bottom">
               <div class="col-3 text-right">
-                <label for="points">Object's Center Distance From Camera in Meters:</label>
+                <label htmlFor="points">Object's Center Distance From Camera in Meters:</label>
               </div>
               <div className="col-3 float-left text-left">
                 <input name="radius" type="number" id="obj_distance" step="0.01" className="form-control"
@@ -783,7 +791,7 @@ class SettingsScreen extends React.Component {
             </div>
             <div class="row m-4 p-4 border-bottom">
               <div class="col-3 text-right">
-                <label for="points">Object Radius:</label>
+                <label htmlFor="points">Object Radius:</label>
               </div>
               <div className="col-3 float-left text-left">
                 <input className="w-75 mr-2" type="range" id="obj_radius" name="points" step="0.05"
@@ -794,7 +802,7 @@ class SettingsScreen extends React.Component {
             </div>
             <div class="row m-4 p-4 border-bottom">
               <div class="col-3 text-right">
-                <label for="points">Number of Frames:</label>
+                <label htmlFor="points">Number of Frames:</label>
               </div>
               <div className="col-3 float-left text-left">
                 <input className="w-75 mr-2" type="range" id="number_of_frames" name="points" step="2"
