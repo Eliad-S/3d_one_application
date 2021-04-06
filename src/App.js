@@ -477,12 +477,12 @@ export const Dictaphone = ({ handleSpeech }) => {
 }
 
 export const TodoPage = () => {
-  console.log('This will run every second!');
+  // console.log('This will run every second!');
   const [todo, setTodo] = useState('')
 
   useEffect(() => {
     const interval = setInterval(() => {
-      console.log('This will run every second!');
+      // console.log('This will run every second!');
       fetch('/feed/aligne').then(response => {
         if (response.ok) {
           return response.blob()
@@ -495,7 +495,7 @@ export const TodoPage = () => {
         var src = url.createObjectURL(blob);
         // setTodo("data:image/jpeg;base64," + blob)
         setTodo(src)
-        console.log("ok")
+        // console.log("ok")
       })
         .catch((error) => {
           console.error('Error:', error);

@@ -37,10 +37,10 @@ def draw_point_clouds(clouds):
     o3d.visualization.draw_geometries(clouds)
 
 
-def rotate_point_cloud(cloud, frame_number):
+def rotate_point_cloud(cloud, number_of_frames, frame_number):
     mesh = cloud
     T = np.eye(4)
-    T[:3, :3] = mesh.get_rotation_matrix_from_xyz((0, (np.pi / 2) * frame_number, 0))
+    T[:3, :3] = mesh.get_rotation_matrix_from_xyz((0, ((2 * np.pi) / number_of_frames) * frame_number, 0))
     print(T)
     mesh_t = copy.deepcopy(mesh).transform(T)
     return mesh_t
@@ -127,7 +127,7 @@ def merge_ply_files():
     for i in range(2, number_of_frames + 1):
         pcd_i = ply_to_point_cloud(f"{i}.ply")
         pcd_i = point_of_origin(pcd_i)
-        pcd_i = rotate_point_cloud(pcd_i, i - 1)
+        pcd_i = rotate_point_cloud(pcd_i, number_of_frames, i - 1)
         pcd += pcd_i
     return pcd
 
@@ -220,15 +220,14 @@ def create_3d_model():
 
     cl, ind = cropped_pcd.remove_statistical_outlier(nb_neighbors=30,
                                                         std_ratio=2.0)
-    draw_point_cloud(cl)
+    # draw_point_cloud(cl)
     mesh = mesh3(cl)  # change to obj file
     # o3d.io.write_triangle_mesh("copy_of_knot.ply", mesh)
     # copy_textured_mesh = o3d.io.read_triangle_mesh('copy_of_crate.obj')
-    draw_point_cloud(mesh)
+    # draw_point_cloud(mesh)
 
     return mesh
 
-create_3d_model()
 def covert_to_obj(mesh, obj_url):
     o3d.io.write_triangle_mesh(obj_url,
                                mesh, write_triangle_uvs=True, print_progress=True)
@@ -237,12 +236,10 @@ def covert_to_obj(mesh, obj_url):
 
 def convert_3d_to_2d(mesh, img_url):
     vis = o3d.visualization.Visualizer()
-    vis.create_window()
     vis.get_render_option().point_color_option = o3d.visualization.PointColorOption.Color
     vis.get_render_option().point_size = 3.0
     vis.add_geometry(mesh)
     vis.capture_screen_image(img_url, do_render=True)
-    vis.destroy_window()
     # resize img
     # img = Image.open("file.jpg")
     # # WIDTH and HEIGHT are integers
