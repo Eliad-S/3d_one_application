@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 // import logo from './logo.svg';
 import './App.css';
 import './bootstrap-4.3.1-dist/css/bootstrap.min.css';
+import './stylesheet.css'
 import scanScreenIcon from './images/camera_icon.svg';
 import ModelsScreenIcon from './images/models_icon.svg';
 import settingsScreenIcon from './images/settings_icon.svg';
@@ -155,7 +156,7 @@ class Menu extends React.Component {
 
   render() {
     return (
-      <nav className="navbar navbar-expand-md navbar-dark col card shadow pt-3 fixed-left">
+      <nav className="navbar navbar-expand-md navbar-dark col card shadow pt-3 fixed-left menu-bg-color">
         <div class="collapse navbar-collapse" id="navbarsExampleDefault">
           <h1 className="font-weight-light">3D One</h1>
           <ul class="navbar-nav">
@@ -346,6 +347,9 @@ class ScanScreen extends React.Component {
   }
 
   componentWillReceiveProps(settings) {
+    if (settings.settings) {
+      settings = settings.settings;
+    }
     this.setState({ settings: settings });
   }
 
@@ -386,6 +390,7 @@ class ScanScreen extends React.Component {
         </div>
         {/* <img id="frame" /> */}
         <div className="row">
+          {console.log(this.state.settings)}
           <div className="col pt-5">
             {this.state.currentlyScanning && this.state.connectedToServer ?
               // fetch('/feed/aligned')
@@ -422,7 +427,7 @@ class ScanScreen extends React.Component {
                       <div className="ml-3 text-left">
                         <h5 className="font-weight-normal justify-content-start">{this.state.numberOfFramesCaptured}/{this.state.settings.number_of_frames} frames were captured
                 <h6 className="font-weight-light"> Press "Capture Frame" and turn the object 90° clockwise</h6>
-                          {this.state.settings.voice_control ? <><img src={micIcon} alt="Mic Icon" /><h6 className="font-weight-light">Voice Control is onLoad=, say "capture"</h6></> : ''}
+                          {this.state.settings.voice_control ? <><img src={micIcon} alt="Mic Icon" /><h6 className="font-weight-light">Voice Control is on,  you may say "capture"</h6></> : ''}
                         </h5>
                       </div>
                       {console.log(this.state.settings.number_of_frames)}
