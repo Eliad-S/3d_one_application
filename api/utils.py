@@ -153,9 +153,9 @@ def point_cloud_to_mesh(pcd):
 
 def mesh3(pcd):
     with o3d.utility.VerbosityContextManager(o3d.utility.VerbosityLevel.Debug) as cm:
-        mesh, densities = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(pcd, depth=10)
+        mesh, densities = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(pcd, depth=9)
 
-    mesh.compute_triangle_normals()
+    # mesh.compute_triangle_normals()
     densities = np.asarray(densities)
     print('remove low density vertices')
     vertices_to_remove = densities < np.quantile(densities, 0.015)
@@ -180,8 +180,9 @@ def mesh3(pcd):
         print("has has_vertex_normals")
     else:
         print("no has_vertex_normals")
-
-    return mesh
+    fmesh = mesh.filter_smooth_simple(number_of_iterations=3)
+    # draw_point_cloud(fmesh)
+    return fmesh
 
 
 def mesh2(pcd):
@@ -236,15 +237,12 @@ def covert_to_obj(mesh, obj_url):
 
 def convert_3d_to_2d(mesh, img_url):
     vis = o3d.visualization.Visualizer()
+    vis.create_window()
     vis.get_render_option().point_color_option = o3d.visualization.PointColorOption.Color
     vis.get_render_option().point_size = 3.0
     vis.add_geometry(mesh)
     vis.capture_screen_image(img_url, do_render=True)
-    # resize img
-    # img = Image.open("file.jpg")
-    # # WIDTH and HEIGHT are integers
-    # resized_img = img.resize((1920, 1200))
-    # resized_img.save("resized_image.jpg")
+    vis.destroy_window()
 
 
 # pcd = open3d.geometry.PointCloud()
