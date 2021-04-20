@@ -217,6 +217,9 @@ def create_3d_model():
     # mesh = point_cloud_to_mesh(pcd)
     print("stroopppp")
     cropped_pcd = crop_dinamically(pcd)
+
+    draw_point_cloud(cropped_pcd)
+
     cl, ind = cropped_pcd.remove_statistical_outlier(nb_neighbors=30,
                                                         std_ratio=2.0)
     draw_point_cloud(cl)
@@ -244,21 +247,3 @@ def convert_3d_to_2d(mesh, img_url):
     vis.add_geometry(mesh)
     vis.capture_screen_image(img_url, do_render=True)
     vis.destroy_window()
-
-#
-# pcd = open3d.geometry.PointCloud()
-# np_points = np.array([[5.31972845, -3.21384387, 0.30217625],
-#                       [5.34483288, -1.13804348, 0.29917539],
-#                       [7.69983939, -1.16651864, 0.30329364],
-#                       [7.67473496, -3.24231903, 0.3062945],
-#                       [5.31845904, -3.21276837, 1.03551451],
-#                       [5.34356348, -1.13696798, 1.03251366],
-#                       [7.69856999, -1.16544314, 1.03663191],
-#                       [7.67346556, -3.24124353, 1.03963277]])
-#
-# # From numpy to Open3D
-# pcd.points = open3d.utility.Vector3dVector(np_points)
-# draw_point_cloud(pcd)
-# from_pcd_to_ply_file(pcd)
-# copy_textured_mesh = o3d.io.read_triangle_mesh('../public/my_models/papa.obj')
-# draw_point_cloud(copy_textured_mesh)
