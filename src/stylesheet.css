@@ -1,4 +1,25 @@
+.blue {
+    /* color: white !important; */
+}
+.font-weight-light {
+    /* color: #22252f; */
+    /* font-weight: 350 !important; */
+}
 .menu-bg-color {
-    background: rgb(255,255,255);
+    background: #ffffff;
     /* background: linear-gradient(180deg, rgba(255,255,255,1) 80%, rgba(109,213,250,1) 90%, rgba(41,128,185,1) 100%); */
+}
+
+.menu-button {
+    /* height: 1750px; */
+}
+
+body {
+    background-color: #ffffff;
+    /* background-image: url('./images/view_in_ar_black_48dp.svg') no-repeat fixed 38px 50px; */
+    background: #ffffff url("./images/view_in_ar_black_48dp.svg") no-repeat fixed 1350px 420px;
+}
+
+.background-svg {
+    
 }

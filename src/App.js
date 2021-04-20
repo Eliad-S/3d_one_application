@@ -17,6 +17,7 @@ import './fixed-left.css';
 import Chart from '../node_modules/chart.js/dist/Chart.js';
 import deleteIcon from './images/delete-white-24dp.svg'
 import micIcon from './images/mic-black-24dp.svg'
+import view3D from './images/view_in_ar_black_48dp.svg'
 import { OBJModel, JSONModel, Tick, MTLModel, DAEModel } from 'react-3d-viewer'
 // import eliad from '../public/e.obj'
 // import eliad from '../api/eliad sellem(1).jpg'
@@ -137,18 +138,18 @@ class Menu extends React.Component {
     return (
       <>
         {this.state.pressed_button === id ?
-          <button id={id} type="button" className="btn btn-primary btn-lg w-100 shadow-sm mb-3 rounded font-weight-light nav-item "
+          <button id={id} type="button" className="btn btn-primary btn-lg w-100 shadow-sm mb-3 rounded font-weight-light nav-item menu-button"
             onClick={this.buttonClick}>
-            {name}
-            <br />
             <img id={id} src={iconWhite} alt={id} />
+            <br />
+            {name}
           </button>
           :
-          <button id={id} type="button" className="btn btn-light btn-lg w-100 shadow-sm mb-3 bg-white rounded font-weight-light nav-item "
+          <button id={id} type="button" className="btn btn-light btn-lg w-100 shadow-sm mb-3 bg-white rounded font-weight-light nav-item menu-button"
             onClick={this.buttonClick}>
-            {name}
-            <br />
             <img id={id} src={icon} alt={id} />
+            <br />
+            {name}
           </button>}
       </>
     );
@@ -158,7 +159,7 @@ class Menu extends React.Component {
     return (
       <nav className="navbar navbar-expand-md navbar-dark col card shadow pt-3 fixed-left menu-bg-color">
         <div class="collapse navbar-collapse" id="navbarsExampleDefault">
-          <h1 className="font-weight-light">3D One</h1>
+          <h1 className="font-weight-light blue">3D One</h1>
           <ul class="navbar-nav">
             {this.renderMenuButton("Scan", scanScreenIcon, scanScreenIconWhite, "scan")}
             {this.renderMenuButton("My 3D Models", ModelsScreenIcon, ModelsScreenIconWhite, "my3DModels")}
@@ -441,10 +442,15 @@ class ScanScreen extends React.Component {
               <div><img src={loadingGIF} alt="Loading" /> <br /> <h4 className="font-weight-light mt-3">Waiting for Server</h4></div>
               : ''}
             {!this.state.currentlyScanning ?
-              <div>
-                <h3 className="text-secondary font-weight-light">Ready to 3D scan your object?</h3>
-                <h4 className="text-secondary font-weight-light">Click "Scan a New Object"</h4>
-                <img src={scanScreenIcon} alt="Scan" />
+              <div className="background-svg">
+                <div class="alert alert-primary" role="alert">
+                <h3 className="font-weight-light">Ready to 3D scan your object?</h3>
+                <h4 className="font-weight-light">Click "Scan a New Object"</h4>
+                {/* <img src={scanScreenIcon} alt="Scan" /> */}
+                </div>
+                <div class="alert alert-warning" role="alert">
+                  Before every scan make sure the settings fit your object!
+                </div>
               </div>
               : ''}
           </div>
