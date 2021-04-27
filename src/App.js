@@ -34,10 +34,12 @@ class Container extends React.Component {
     this.handleMenuButtonClick = this.handleMenuButtonClick.bind(this);
     this.renderScreens = this.renderScreens.bind(this);
     this.updateSettings = this.updateSettings.bind(this);
+    this.scanMode = this.scanMode.bind(this);
     this.state = {
       current_screen: "scan",
       settings: null,
       alert: null,
+      currentlyScanning: false,
     };
   }
 
@@ -67,11 +69,11 @@ class Container extends React.Component {
 
 
   handleMenuButtonClick(clickedButton) {
-    console.log(this.state.currentlyScanning)
+    console.log("scanning??? " + this.state.currentlyScanning);
     if (this.state.currentlyScanning) {
       this.setState({
         alert: "Please stop scanning before navigating to another page",
-      }, setInterval(this.setState({alert: null}), 3000));
+      });
     }
     else {
       this.setState({
@@ -91,10 +93,15 @@ class Container extends React.Component {
     }, console.log(this.state.settings))
   }
 
+  scanMode(flag) {
+    this.setState({
+      currentlyScanning: flag,
+    }, console.log("this.currentlyscanning: " + this.state.currentlyScanning));
+  }
   renderScreens() {
     if (this.state.current_screen === "scan") {
       return (
-        <ScanScreen settings={this.state.settings} />
+        <ScanScreen settings={this.state.settings} onChildClick={this.scanMode} />
       );
     }
     if (this.state.current_screen === "my3DModels") {
@@ -114,11 +121,11 @@ class Container extends React.Component {
       <div id="container" className="container-fluid">
         <div className="row ">
           <div className="container-fluid">
-            <Menu onChildClick={this.handleMenuButtonClick} />
+            <Menu onChildClick={this.handleMenuButtonClick} currentlyScanning={this.state.currentlyScanning} />
           </div>
           <div className="col-12 w-100">
             {this.renderScreens()}
-            <div class="alert alert-primary" role="alert">{this.state.alert}</div>
+            {this.state.alert ? <div class="alert alert-warning" role="alert">{this.state.alert}</div> : ''}
           </div>
         </div>
       </div>
@@ -133,15 +140,20 @@ class Menu extends React.Component {
     this.buttonClick = this.buttonClick.bind(this);
     this.state = {
       pressed_button: "scan",
+      currentlyScanning: this.props.currentlyScanning
     };
   }
 
   buttonClick(event) {
-    const id = event.target.id;
-    this.props.onChildClick(id);
-    this.setState({
-      pressed_button: id,
-    });
+    console.log("what" + this.props.currentlyScanning)
+    if (!this.props.currentlyScanning) {
+      const id = event.target.id;
+      this.props.onChildClick(id);
+      this.setState({
+        pressed_button: id,
+      });
+    }
+
   }
 
   renderMenuButton(name, icon, iconWhite, id) {
@@ -264,6 +276,7 @@ class ScanScreen extends React.Component {
 
   scanning() {
     let temp = !this.state.currentlyScanning;
+    this.props.onChildClick(temp);
     this.setState({
       currentlyScanning: temp,
       numberOfFramesCaptured: 0,
