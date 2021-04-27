@@ -34,12 +34,9 @@ class Container extends React.Component {
     this.handleMenuButtonClick = this.handleMenuButtonClick.bind(this);
     this.renderScreens = this.renderScreens.bind(this);
     this.updateSettings = this.updateSettings.bind(this);
-    this.scanMode = this.scanMode.bind(this);
     this.state = {
       current_screen: "scan",
       settings: null,
-      alert: null,
-      currentlyScanning: false,
     };
   }
 
@@ -69,17 +66,9 @@ class Container extends React.Component {
 
 
   handleMenuButtonClick(clickedButton) {
-    console.log("scanning??? " + this.state.currentlyScanning);
-    if (this.state.currentlyScanning) {
-      this.setState({
-        alert: "Please stop scanning before navigating to another page",
-      });
-    }
-    else {
-      this.setState({
-        current_screen: clickedButton,
-      });
-    }
+    this.setState({
+      current_screen: clickedButton,
+    });
   }
 
   updateSettings(key, value) {
@@ -93,15 +82,10 @@ class Container extends React.Component {
     }, console.log(this.state.settings))
   }
 
-  scanMode(flag) {
-    this.setState({
-      currentlyScanning: flag,
-    }, console.log("this.currentlyscanning: " + this.state.currentlyScanning));
-  }
   renderScreens() {
     if (this.state.current_screen === "scan") {
       return (
-        <ScanScreen settings={this.state.settings} onChildClick={this.scanMode} />
+        <ScanScreen settings={this.state.settings} />
       );
     }
     if (this.state.current_screen === "my3DModels") {
@@ -121,11 +105,10 @@ class Container extends React.Component {
       <div id="container" className="container-fluid">
         <div className="row ">
           <div className="container-fluid">
-            <Menu onChildClick={this.handleMenuButtonClick} currentlyScanning={this.state.currentlyScanning} />
+            <Menu onChildClick={this.handleMenuButtonClick} />
           </div>
           <div className="col-12 w-100">
             {this.renderScreens()}
-            {this.state.alert ? <div class="alert alert-warning" role="alert">{this.state.alert}</div> : ''}
           </div>
         </div>
       </div>
@@ -140,20 +123,15 @@ class Menu extends React.Component {
     this.buttonClick = this.buttonClick.bind(this);
     this.state = {
       pressed_button: "scan",
-      currentlyScanning: this.props.currentlyScanning
     };
   }
 
   buttonClick(event) {
-    console.log("what" + this.props.currentlyScanning)
-    if (!this.props.currentlyScanning) {
-      const id = event.target.id;
-      this.props.onChildClick(id);
-      this.setState({
-        pressed_button: id,
-      });
-    }
-
+    const id = event.target.id;
+    this.props.onChildClick(id);
+    this.setState({
+      pressed_button: id,
+    });
   }
 
   renderMenuButton(name, icon, iconWhite, id) {
@@ -276,7 +254,6 @@ class ScanScreen extends React.Component {
 
   scanning() {
     let temp = !this.state.currentlyScanning;
-    this.props.onChildClick(temp);
     this.setState({
       currentlyScanning: temp,
       numberOfFramesCaptured: 0,
@@ -450,7 +427,7 @@ class ScanScreen extends React.Component {
                       <FramesPieChart numberOfFrames={this.state.settings.number_of_frames} numberOfFramesCaptured={this.state.numberOfFramesCaptured} />
                       <div className="ml-3 text-left">
                         <h5 className="font-weight-normal justify-content-start">{this.state.numberOfFramesCaptured}/{this.state.settings.number_of_frames} frames were captured
-                <h6 className="font-weight-light"> Press "Capture Frame" and turn the object {360/this.state.settings.number_of_frames}° clockwise</h6>
+                <h6 className="font-weight-light"> Press "Capture Frame" and turn the object 90° clockwise</h6>
                           {this.state.settings.voice_control ? <><img src={micIcon} alt="Mic Icon" /><h6 className="font-weight-light">Voice Control is on,  you may say "capture"</h6></> : ''}
                         </h5>
                       </div>
