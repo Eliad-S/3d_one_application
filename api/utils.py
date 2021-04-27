@@ -1,15 +1,12 @@
 import numpy as np
-# from open3d.cpu.pybind.io import read_point_cloud
-# from open3d.cpu.pybind.visualization import draw_geometries
+
 import open3d as o3d
 import copy
 import trimesh
 from io import BytesIO
 from setting_manager import Setting_Manager
-import matplotlib.pyplot as plt
 
 setting_manager = Setting_Manager()
-
 
 
 def serve_pil_image(pil_img):
@@ -34,10 +31,11 @@ def draw_point_cloud(cloud):
 def from_pcd_to_ply_file(pcd):
     o3d.io.write_point_cloud("mesh.ply", pcd)
 
+
 def rotate_point_cloud(cloud, number_of_frames, frame_number):
     mesh = cloud
     T = np.eye(4)
-    T[:3, :3] = mesh.get_rotation_matrix_from_xyz((0, (np.pi / (number_of_frames/2)) * frame_number, 0))
+    T[:3, :3] = mesh.get_rotation_matrix_from_xyz((0, (np.pi / (number_of_frames / 2)) * frame_number, 0))
     print(T)
     mesh_t = copy.deepcopy(mesh).transform(T)
     return mesh_t
@@ -66,14 +64,14 @@ def crop_dinamically(cloud):
     min_height = -0.3
     max_height = 1
     corners = np.array([[radius, max_height, radius],
-             [-radius, min_height, -radius],
-               [-radius, max_height, -radius],
-               [radius, min_height, -radius],
-               [radius, max_height, radius],
-               [-radius, max_height, radius],
-               [radius, min_height, radius],
-               [-radius, min_height, radius]
-               ])
+                        [-radius, min_height, -radius],
+                        [-radius, max_height, -radius],
+                        [radius, min_height, -radius],
+                        [radius, max_height, radius],
+                        [-radius, max_height, radius],
+                        [radius, min_height, radius],
+                        [-radius, min_height, radius]
+                        ])
 
     # Convert the corners array to have type float64
     bounding_polygon = corners.astype("float64")
@@ -130,13 +128,6 @@ def merge_ply_files():
 
 
 def point_cloud_to_mesh(pcd):
-    # tetra_mesh, pt_map = o3d.geometry.TetraMesh.create_from_point_cloud(pcd)
-    # for alpha in np.logspace(np.log10(0.5), np.log10(0.01), num=4):
-    #     print(f"alpha={alpha:.3f}")
-    #     mesh = o3d.geometry.TriangleMesh.create_from_point_cloud_alpha_shape(pcd, alpha, tetra_mesh, pt_map)
-    #     mesh.compute_vertex_normals()
-    #     o3d.visualization.draw_geometries([mesh], mesh_show_back_face=True)
-    #
 
     print('run Poisson surface reconstruction')
     with o3d.utility.VerbosityContextManager(
@@ -153,20 +144,10 @@ def mesh3(pcd):
         mesh, densities = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(pcd, depth=9, n_threads=8)
 
     print('remove low density vertices')
-    o3d.visualization.draw_geometries([mesh])
-
     vertices_to_remove = densities < np.quantile(densities, 0.01)
     mesh.remove_vertices_by_mask(vertices_to_remove)
-    o3d.visualization.draw_geometries([mesh])
+    return mesh
 
-    mesh_out = mesh.filter_smooth_simple(number_of_iterations=5)
-    mesh_out.compute_vertex_normals()
-    o3d.visualization.draw_geometries([mesh_out])
-    mesh_out = mesh.filter_smooth_simple(number_of_iterations=1)
-    o3d.visualization.draw_geometries([mesh_out])
-    mesh_out.compute_vertex_normals()
-
-    return mesh_out
 
 def mesh2(pcd):
     # estimate radius for rolling ball
@@ -187,12 +168,7 @@ def mesh2(pcd):
     mesh.compute_vertex_normals()
 
     return mesh
-    # create the triangular mesh with the vertices and faces from open3d
-    # tri_mesh = trimesh.Trimesh(np.asarray(mesh.vertices), np.asarray(mesh.triangles),
-    #                            vertex_normals=np.asarray(mesh.vertex_normals))
-    #
-    # trimesh.convex.is_convex(tri_mesh)
-    # return tri_mesh
+
 
 def create_3d_model():
     pcd = merge_ply_files()
@@ -205,8 +181,6 @@ def create_3d_model():
     mesh = mesh3(cl)  # change to obj file
     draw_point_cloud(mesh)
     return mesh
-
-# create_3d_model()
 
 
 def covert_to_obj(mesh, obj_url):

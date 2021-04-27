@@ -1,7 +1,5 @@
 import os
 import time
-from sqlalchemy.exc import IntegrityError
-
 from flask import Flask, send_file, jsonify, make_response
 from camera_utils import CameraPipe
 from db_manager import db_session
