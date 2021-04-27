@@ -3,7 +3,7 @@ import numpy as np
 import pyrealsense2 as rs
 from PIL import Image
 import cv2
-from utils import serve_pil_image, create_3d_model, covert_to_obj
+from utils import serve_pil_image, create_3d_model
 time = datetime.now()
 rgb_option = 1
 aligned_option = 2
@@ -69,7 +69,10 @@ class CameraPipe:
             print(f"Saving to {self.captured_frames_counter}.ply...")
             # BGR to RGB
             # Apply the processing block to the frameset which contains the depth frame and the texture
+
             self.points.export_to_ply(f"{self.captured_frames_counter}.ply", self.color_frame)
+            texture = self.points.get_texture_coordinates()
+            print(texture)
             # ply.process(colorized)
             self.captured_frames_counter += 1
             print("Done")
@@ -90,10 +93,7 @@ class CameraPipe:
         print("enter capture_frame")
         print(self.is_open_pip)
         if not self.is_open_pip:
-            print("pipe is closed, open first")
-            return None
-            # t = Thread(target=check_timeout)
-            # t.start()
+            self.open_pipe()
         try:
             align_to = rs.stream.color
             align = rs.align(align_to)
@@ -130,6 +130,18 @@ class CameraPipe:
             depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth_image, alpha=0.03), cv2.COLORMAP_JET)
             images = np.hstack((bg_removed, depth_colormap))
             image = cv2.cvtColor(images, cv2.COLOR_RGB2BGR)
+            # waits for user to press any key
+            # (this is necessary to avoid Python kernel form crashing)
+            cv2.waitKey(0)
+            height = bg_removed.shape[0]
+            width = bg_removed.shape[1]
+            try:
+                cv2.line(bg_removed, (0, int(height/2)), (width, int(height/2)), (204, 229, 255), 2)
+                cv2.line(bg_removed, (int(width/2), 0), (int(width / 2), height), (204, 229, 255), 2)
+            except Exception as e:
+                print(e)
+
+
             print("Image written to file-system : ", type(image))
 
             # save image
@@ -152,6 +164,10 @@ class CameraPipe:
         except Exception:
             self.close_pipe()
 
-
+# camera = CameraPipe()
+# camera.open_pipe()
+# camera.get_frame(aligned_option)
+#
+# camera.capture_frame()
 
 

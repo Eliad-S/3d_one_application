@@ -200,6 +200,7 @@ class ScanScreen extends React.Component {
       settings: props.settings,
       numberOfFramesCaptured: 0,
       isCreatingModel: false,
+      capturing: false,
     };
     this.scanning = this.scanning.bind(this);
     this.capture = this.capture.bind(this);
@@ -263,11 +264,17 @@ class ScanScreen extends React.Component {
   }
 
   capture() {
+    this.setState({
+      capturing: true,
+    })
     fetch('/capture', {
       method: 'GET'
     }).then(response => {
       if (response.ok) {
         console.log("capture");
+        this.setState({
+          capturing: false,
+        })
         return response.json()
       }
       else {
@@ -422,7 +429,8 @@ class ScanScreen extends React.Component {
                   </div>
                   :
                   <>
-                    <button type="button" className="btn btn-primary btn-lg font-weight-light float-left" onClick={this.capture}>Capture Frame</button>
+                    <button type="button" className="btn btn-primary btn-lg font-weight-light float-right" onClick={this.capture}>Capture Frame</button>
+                    {this.state.capturing? <img src={loadingGIF} className="ml-2" width="25px" height="25px" alt="loading"/> : '  '}
                     <div className="container float-left d-flex my-auto">
                       <FramesPieChart numberOfFrames={this.state.settings.number_of_frames} numberOfFramesCaptured={this.state.numberOfFramesCaptured} />
                       <div className="ml-3 text-left">
@@ -433,7 +441,7 @@ class ScanScreen extends React.Component {
                       </div>
                       {console.log(this.state.settings.number_of_frames)}
                     </div>
-                    <Dictaphone handleSpeech={this.handleSpeechtoText} />
+                    {this.state.settings.voice_control ? <Dictaphone handleSpeech={this.handleSpeechtoText} /> : ''}
                     {<TodoPage />}
                   </>
                 }
@@ -461,23 +469,42 @@ class ScanScreen extends React.Component {
 }
 
 export const Dictaphone = ({ handleSpeech }) => {
-  const { transcript, resetTranscript } = useSpeechRecognition()
+  const commands = [
+    {
+      command: 'capture',
+      callback: () => {resetTranscript(); handleSpeech('capture');},
+      matchInterim: true
+    },
+    {
+      command: 'doctor',
+      callback: () => {resetTranscript(); handleSpeech('capture');},
+      matchInterim: true
+    },
+  ]
+  const { transcript, resetTranscript } = useSpeechRecognition({commands})
 
   if (!SpeechRecognition.browserSupportsSpeechRecognition()) {
     return null
   }
 
-  SpeechRecognition.startListening()
-  handleSpeech(transcript)
+  SpeechRecognition.startListening({
+    // continuous: true,
+    language: 'en-US, he'
+  })
+  // if (transcript.localeCompare("capture") === 0) {
+  //   console.log("im here")
+  //   resetTranscript();
+  // }
+
   // resetTranscript()
-  // setTimeout(resetTranscript(), 1000)
+  // setInterval(resetTranscript(), 2000)
 
   return (
     <div>
       {/* <button onClick={SpeechRecognition.startListening}>Start</button> */}
-      <button onClick={SpeechRecognition.stopListening}>Stop</button>
-      <button onClick={resetTranscript}>Reset</button>
-      <p>{transcript}</p>
+      {/* <button onClick={SpeechRecognition.stopListening}>Stop</button> */}
+      {/* <button onClick={resetTranscript}>Reset</button> */}
+      {/* <p>{transcript}</p> */}
     </div>
   )
 }
@@ -565,6 +592,7 @@ class My3DModelsScreen extends React.Component {
       models: [],
       spesificModel: null,
       isLoading: true,
+      isLoading3DModel: false,
     };
   }
 
@@ -588,9 +616,12 @@ class My3DModelsScreen extends React.Component {
   }
 
   viewModel(name) {
-    fetch('/models/view' + name).then(response => {
+    fetch('/models/view/' + name).then(response => {
       if (response.ok) {
         console.log("models ok");
+        this.setState({
+          isLoading3DModel: false,
+        })
         return response.json()
       } else {
         throw new Error('Something went wrong');
@@ -647,7 +678,8 @@ class My3DModelsScreen extends React.Component {
                       <div className="pl-3 float-left">
                         <h3 className="font-weight-light">{model.name}</h3>
                         <ul class="list-group list-group-flush">
-                          <li class="list-group-item"><button class="btn btn-primary" onClick={() => this.viewModel(model.name)}>View 3D Model</button></li>
+                          <li class="list-group-item"><button class="btn btn-primary" onClick={() => {this.viewModel(model.name); this.setState({isLoading3DModel: true})}}>View 3D Model</button>
+                          {this.state.isLoading3DModel? <img src={loadingGIF} className="ml-2" width="25px" height="25px" alt="loading"/> : '  '}</li>
                           <li class="list-group-item"><button class="btn btn-secondary" onClick={() => { this.setState({ spesificModel: this.state.models[array.length - 1 - index] }) }}>View 3D Model Grayscale Preview</button></li>
                           <li class="list-group-item">Scanned at {model.creation_date}</li>
                           <li class="list-group-item">Size: {model.size}</li>
@@ -795,7 +827,7 @@ class SettingsScreen extends React.Component {
                   Enable Voice Control:
                 </label>
               </div>
-              <div className="col-3 float-left text-left">
+              <div className="col-5 float-left text-left">
                 <input class="form-check-input" type="checkbox" id="voice_control" onClick={this.handleVoiceControlChange} defaultChecked={this.state.settings.voice_control} />
                 <small>Use Voice Control to capture frames using your voice. Whenever scanning you may say "capture" instead of pressing "capture" button.</small>
               </div>
@@ -804,7 +836,7 @@ class SettingsScreen extends React.Component {
               <div class="col-3 text-right">
                 <label htmlFor="points">Object's Center Distance From Camera in Meters:</label>
               </div>
-              <div className="col-3 float-left text-left">
+              <div className="col-5 float-left text-left">
                 <input name="radius" type="number" id="obj_distance" step="0.01" className="form-control"
                   placeholder={this.state.settings.obj_distance} defaultValue={this.state.settings.obj_distance} onChange={this.handleObjParamsChange} ref={el => this.radius = el} required />
                 <small>Accurate input will result a finer merge of all frames.</small>
@@ -814,7 +846,7 @@ class SettingsScreen extends React.Component {
               <div class="col-3 text-right">
                 <label htmlFor="points">Object Radius:</label>
               </div>
-              <div className="col-3 float-left text-left">
+              <div className="col-5 float-left text-left">
                 <input className="w-75 mr-2" type="range" id="obj_radius" name="points" step="0.05"
                   defaultValue={this.state.obj_radius} min="0.1" max="3" onChange={this.handleObjParamsChange} /> {this.state.obj_radius}
                 <br />
@@ -825,7 +857,7 @@ class SettingsScreen extends React.Component {
               <div class="col-3 text-right">
                 <label htmlFor="points">Number of Frames:</label>
               </div>
-              <div className="col-3 float-left text-left">
+              <div className="col-5 float-left text-left">
                 <input className="w-75 mr-2" type="range" id="number_of_frames" name="points" step="2"
                   defaultValue={this.state.settings.number_of_frames} min="2" max="8" onChange={this.handleObjParamsChange} /> {this.state.number_of_frames}
                 <br />

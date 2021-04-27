@@ -6,7 +6,7 @@ from flask import Flask, send_file, jsonify, make_response
 from camera_utils import CameraPipe
 from db_manager import db_session
 import db_manager
-from utils import covert_to_obj, convert_3d_to_2d, setting_manager
+from utils import covert_to_obj, convert_3d_to_2d, setting_manager, view_model_by_url
 from hurry.filesize import size
 
 camera = CameraPipe()
@@ -63,8 +63,14 @@ def get_rgb():
 @app.route('/feed/aligne', methods=['GET'])
 def get_aligned():
     print('get requesessssssssss')
-    img_io = camera.get_align_path()
-    print(type(img_io))
+    try:
+        img_io = camera.get_align_path()
+        print(type(img_io))
+    except Exception as e:
+        print(e)
+        return make_response(jsonify("failed capture frame"), 404)
+
+
     return send_file(img_io, mimetype='image/jpeg', as_attachment=False, cache_timeout=0)
 
 
@@ -77,8 +83,10 @@ def index():
 #try catch
 @app.route('/models', methods=['GET'])
 def get_models():
-    # print(db_manager.get_all())
-    return jsonify([i.serialize for i in db_manager.get_all()])
+    try:
+        return jsonify([i.serialize for i in db_manager.get_all()])
+    except Exception as error:
+        return make_response(jsonify("failed getting models from db"), 404)
 
 
 @app.route('/models/delete/<name>', methods=['GET'])
@@ -90,23 +98,6 @@ def get_models_by_name(name=None):
         return make_response(jsonify("model has been deleted"), 200)
     except Exception as error:
         return make_response(jsonify("failed deleting model"), 404)
-
-# @app.route('/models/date', methods=['GET'])
-# def get_models_by_date():
-#     # print(db_manager.get_all())
-#     return jsonify([i.serialize for i in db_manager.get_all()])
-#
-#
-# @app.route('/models/size', methods=['GET'])
-# def get_models_by_size():
-#     # print(db_manager.get_all())
-#     return jsonify([i.serialize for i in db_manager.get_all()])
-#
-#
-# @app.route('/models/name', methods=['GET'])
-# def get_models_by_name():
-#     # print(db_manager.get_all())
-#     return jsonify([i.serialize for i in db_manager.get_all()])
 
 
 @app.route('/capture', methods=['GET'])
@@ -212,3 +203,13 @@ def create_model(name=None):
         if os.path.exists(img_url):
             os.remove(img_url)
         return make_response(jsonify("failed creating model"), 404)
+
+
+@app.route('/models/view/<name>', methods=['GET'])
+def model_viewer(name=None):
+    if not name:
+        return make_response(jsonify("model name wasn't provided"), 404)
+    model = db_manager.get_item(name)
+    view_model_by_url(f'../public/{model.model_url}', name)
+    return make_response(f"{name}'s opened successfully", 200)
+

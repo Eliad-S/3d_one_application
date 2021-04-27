@@ -6,6 +6,8 @@ import copy
 import trimesh
 from io import BytesIO
 from setting_manager import Setting_Manager
+import matplotlib.pyplot as plt
+
 setting_manager = Setting_Manager()
 
 
@@ -31,11 +33,6 @@ def draw_point_cloud(cloud):
 
 def from_pcd_to_ply_file(pcd):
     o3d.io.write_point_cloud("mesh.ply", pcd)
-
-
-def draw_point_clouds(clouds):
-    o3d.visualization.draw_geometries(clouds)
-
 
 def rotate_point_cloud(cloud, number_of_frames, frame_number):
     mesh = cloud
@@ -66,7 +63,6 @@ def crop_point_cloud(cloud):
 
 def crop_dinamically(cloud):
     radius = setting_manager.get_val("obj_radius")
-
     min_height = -0.3
     max_height = 1
     corners = np.array([[radius, max_height, radius],
@@ -154,35 +150,23 @@ def point_cloud_to_mesh(pcd):
 
 def mesh3(pcd):
     with o3d.utility.VerbosityContextManager(o3d.utility.VerbosityLevel.Debug) as cm:
-        mesh, densities = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(pcd, depth=10)
+        mesh, densities = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(pcd, depth=9, n_threads=8)
 
-    mesh.compute_triangle_normals()
-    densities = np.asarray(densities)
     print('remove low density vertices')
-    vertices_to_remove = densities < np.quantile(densities, 0.015)
-    mesh.remove_vertices_by_mask(vertices_to_remove)
-    # if mesh.has_textures():
-    #     print("has texture")
-    # else:
-    #     print("no texture")
-    # if mesh.has_triangle_normals():
-    #     print("has has_triangle_normals")
-    # else:
-    #     print("no has_triangle_normals")
-    # if mesh.has_triangle_uvs():
-    #     print("has has_triangle_uvs")
-    # else:
-    #     print("no has_triangle_uvs")
-    # if mesh.has_vertex_colors():
-    #     print("has has_vertex_colors")
-    # else:
-    #     print("no has_vertex_colors")
-    # if mesh.has_vertex_normals():
-    #     print("has has_vertex_normals")
-    # else:
-    #     print("no has_vertex_normals")
+    o3d.visualization.draw_geometries([mesh])
 
-    return mesh
+    vertices_to_remove = densities < np.quantile(densities, 0.01)
+    mesh.remove_vertices_by_mask(vertices_to_remove)
+    o3d.visualization.draw_geometries([mesh])
+
+    mesh_out = mesh.filter_smooth_simple(number_of_iterations=5)
+    mesh_out.compute_vertex_normals()
+    o3d.visualization.draw_geometries([mesh_out])
+    mesh_out = mesh.filter_smooth_simple(number_of_iterations=1)
+    o3d.visualization.draw_geometries([mesh_out])
+    mesh_out.compute_vertex_normals()
+
+    return mesh_out
 
 def mesh2(pcd):
     # estimate radius for rolling ball
@@ -201,7 +185,6 @@ def mesh2(pcd):
     tri.export('stuff.stl')
 
     mesh.compute_vertex_normals()
-    o3d.visualization.draw_geometries([mesh])
 
     return mesh
     # create the triangular mesh with the vertices and faces from open3d
@@ -211,32 +194,24 @@ def mesh2(pcd):
     # trimesh.convex.is_convex(tri_mesh)
     # return tri_mesh
 
-
 def create_3d_model():
     pcd = merge_ply_files()
-    # mesh = point_cloud_to_mesh(pcd)
     print("stroopppp")
     cropped_pcd = crop_dinamically(pcd)
 
-    draw_point_cloud(cropped_pcd)
-
-    cl, ind = cropped_pcd.remove_statistical_outlier(nb_neighbors=30,
-                                                        std_ratio=2.0)
-    draw_point_cloud(cl)
+    # cl, ind = cropped_pcd.remove_statistical_outlier(nb_neighbors=10, std_ratio=2.0)
+    cl, ind = cropped_pcd.remove_radius_outlier(nb_points=30, radius=0.005)
+    # draw_point_cloud(cl)
     mesh = mesh3(cl)  # change to obj file
-    # o3d.io.write_triangle_mesh("copy_of_knot.ply", mesh)
-    # copy_textured_mesh = o3d.io.read_triangle_mesh('copy_of_crate.obj')
     draw_point_cloud(mesh)
-    fmesh = mesh.filter_smooth_simple(number_of_iterations=3)
-    draw_point_cloud(fmesh)
-    return fmesh
+    return mesh
 
-create_3d_model()
+# create_3d_model()
+
 
 def covert_to_obj(mesh, obj_url):
     o3d.io.write_triangle_mesh(obj_url,
                                mesh, write_triangle_uvs=True, print_progress=True)
-# covert_to_obj(create_3d_model(), "elasda")
 
 
 def convert_3d_to_2d(mesh, img_url):
@@ -247,3 +222,10 @@ def convert_3d_to_2d(mesh, img_url):
     vis.add_geometry(mesh)
     vis.capture_screen_image(img_url, do_render=True)
     vis.destroy_window()
+
+
+def view_model_by_url(url, model_name):
+    print(url)
+    mesh = o3d.io.read_triangle_mesh(url, print_progress=False)
+    mesh.compute_vertex_normals()
+    o3d.visualization.draw_geometries([mesh], window_name=f"{model_name}'s 3D Model")
