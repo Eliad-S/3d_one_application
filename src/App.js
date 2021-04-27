@@ -587,6 +587,20 @@ class My3DModelsScreen extends React.Component {
       })
   }
 
+  viewModel(name) {
+    fetch('/models/view' + name).then(response => {
+      if (response.ok) {
+        console.log("models ok");
+        return response.json()
+      } else {
+        throw new Error('Something went wrong');
+      }
+    })
+      .catch((error) => {
+        console.error('Error:', error);
+      })
+  }
+
   deleteModel(modelName) {
     let name = encodeURIComponent(modelName.trim())
     console.log(name)
@@ -633,7 +647,8 @@ class My3DModelsScreen extends React.Component {
                       <div className="pl-3 float-left">
                         <h3 className="font-weight-light">{model.name}</h3>
                         <ul class="list-group list-group-flush">
-                          <li class="list-group-item"><button class="btn btn-primary" onClick={() => { this.setState({ spesificModel: this.state.models[array.length - 1 - index] }) }}>View 3D Model</button></li>
+                          <li class="list-group-item"><button class="btn btn-primary" onClick={() => this.viewModel(model.name)}>View 3D Model</button></li>
+                          <li class="list-group-item"><button class="btn btn-secondary" onClick={() => { this.setState({ spesificModel: this.state.models[array.length - 1 - index] }) }}>View 3D Model Grayscale Preview</button></li>
                           <li class="list-group-item">Scanned at {model.creation_date}</li>
                           <li class="list-group-item">Size: {model.size}</li>
                           <li class="list-group-item">Captured using {model.number_of_frames} frames</li>
