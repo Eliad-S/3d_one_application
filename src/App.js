@@ -37,6 +37,7 @@ class Container extends React.Component {
     this.state = {
       current_screen: "scan",
       settings: null,
+      alert: null,
     };
   }
 
@@ -66,9 +67,17 @@ class Container extends React.Component {
 
 
   handleMenuButtonClick(clickedButton) {
-    this.setState({
-      current_screen: clickedButton,
-    });
+    console.log(this.state.currentlyScanning)
+    if (this.state.currentlyScanning) {
+      this.setState({
+        alert: "Please stop scanning before navigating to another page",
+      }, setInterval(this.setState({alert: null}), 3000));
+    }
+    else {
+      this.setState({
+        current_screen: clickedButton,
+      });
+    }
   }
 
   updateSettings(key, value) {
@@ -109,6 +118,7 @@ class Container extends React.Component {
           </div>
           <div className="col-12 w-100">
             {this.renderScreens()}
+            {this.state.alert}
           </div>
         </div>
       </div>
@@ -427,7 +437,7 @@ class ScanScreen extends React.Component {
                       <FramesPieChart numberOfFrames={this.state.settings.number_of_frames} numberOfFramesCaptured={this.state.numberOfFramesCaptured} />
                       <div className="ml-3 text-left">
                         <h5 className="font-weight-normal justify-content-start">{this.state.numberOfFramesCaptured}/{this.state.settings.number_of_frames} frames were captured
-                <h6 className="font-weight-light"> Press "Capture Frame" and turn the object 90° clockwise</h6>
+                <h6 className="font-weight-light"> Press "Capture Frame" and turn the object {360/this.state.settings.number_of_frames}° clockwise</h6>
                           {this.state.settings.voice_control ? <><img src={micIcon} alt="Mic Icon" /><h6 className="font-weight-light">Voice Control is on,  you may say "capture"</h6></> : ''}
                         </h5>
                       </div>
