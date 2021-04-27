@@ -375,7 +375,7 @@ class ScanScreen extends React.Component {
           <div class="col">
             <h1 className="text-left font-weight-light">Scan</h1>
           </div>
-          {this.state.settings ? 'gooddd' : 'nottttt'}
+          {/* {this.state.settings ? 'gooddd' : 'nottttt'} */}
           <div className="float-right">
             {this.state.currentlyScanning ?
               <>
@@ -429,20 +429,32 @@ class ScanScreen extends React.Component {
                   </div>
                   :
                   <>
-                    <button type="button" className="btn btn-primary btn-lg font-weight-light float-right" onClick={this.capture}>Capture Frame</button>
-                    {this.state.capturing? <img src={loadingGIF} className="ml-2" width="25px" height="25px" alt="loading"/> : '  '}
+                    <div className="row">
+                      <div className="col-3">
+                      <button type="button" className="btn btn-primary btn-lg font-weight-light float-right" onClick={this.capture}>Capture Frame</button>
+                      {this.state.capturing? <img src={loadingGIF} className="ml-2" width="25px" height="25px" alt="loading"/> : '  '}
+
+
+                      </div>
+                      <div className="col-8">
                     <div className="container float-left d-flex my-auto">
                       <FramesPieChart numberOfFrames={this.state.settings.number_of_frames} numberOfFramesCaptured={this.state.numberOfFramesCaptured} />
                       <div className="ml-3 text-left">
                         <h5 className="font-weight-normal justify-content-start">{this.state.numberOfFramesCaptured}/{this.state.settings.number_of_frames} frames were captured
                 <h6 className="font-weight-light"> Press "Capture Frame" and turn the object 90° clockwise</h6>
-                          {this.state.settings.voice_control ? <><img src={micIcon} alt="Mic Icon" /><h6 className="font-weight-light">Voice Control is on,  you may say "capture"</h6></> : ''}
+                          {this.state.settings.voice_control ? <><img src={micIcon} alt="Mic Icon" /><span className="font-weight-light">Voice Control is on,  you may say "capture"</span></> : ''}
                         </h5>
                       </div>
                       {console.log(this.state.settings.number_of_frames)}
                     </div>
                     {this.state.settings.voice_control ? <Dictaphone handleSpeech={this.handleSpeechtoText} /> : ''}
-                    {<TodoPage />}
+                      </div>
+                    </div>
+                    <div className="row">
+                      <div className="col-8 mx-auto">
+                      {<TodoPage />}
+                      </div>
+                    </div>
                   </>
                 }
               </> : ''}
@@ -488,7 +500,7 @@ export const Dictaphone = ({ handleSpeech }) => {
   }
 
   SpeechRecognition.startListening({
-    // continuous: true,
+    continuous: true,
     language: 'en-US, he'
   })
   // if (transcript.localeCompare("capture") === 0) {
@@ -541,7 +553,7 @@ export const TodoPage = () => {
 
   return (
     <>
-      <img className="w-75 mt-4 rounded" src={todo} alt="camera feed" />
+      <img className="w-100 mt-4 rounded" src={todo} alt="camera feed" />
     </>
   )
 }
@@ -712,7 +724,7 @@ class My3DModelsScreen extends React.Component {
                   </div>
                 </div>}
               <div>
-                <OBJModel src={this.state.spesificModel.model_url} alt='3D Model' width="1400" height="800"
+                <OBJModel src={this.state.spesificModel.model_url} alt='3D Model' width="1000" height="400"
                   onProgress={() => { this.setState({ isLoading: true }); console.log("loading") }} onLoad={() => { this.setState({ isLoading: false }); console.log("done") }} />
                 {/* <DAEModel src="my_models/idan.dae" alt='3D Model' width="1400" height="800"
                   onProgress={() => { this.setState({ isLoading: true }); console.log("loading") }} onLoad={() => { this.setState({ isLoading: false }); console.log("done") }} /> */}

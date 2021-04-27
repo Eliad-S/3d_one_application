@@ -182,7 +182,6 @@ def create_3d_model():
     draw_point_cloud(mesh)
     return mesh
 
-
 def covert_to_obj(mesh, obj_url):
     o3d.io.write_triangle_mesh(obj_url,
                                mesh, write_triangle_uvs=True, print_progress=True)
@@ -201,5 +200,4 @@ def convert_3d_to_2d(mesh, img_url):
 def view_model_by_url(url, model_name):
     print(url)
     mesh = o3d.io.read_triangle_mesh(url, print_progress=False)
-    mesh.compute_vertex_normals()
     o3d.visualization.draw_geometries([mesh], window_name=f"{model_name}'s 3D Model")
