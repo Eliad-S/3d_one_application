@@ -118,7 +118,7 @@ class Container extends React.Component {
           </div>
           <div className="col-12 w-100">
             {this.renderScreens()}
-            {this.state.alert}
+            <div class="alert alert-primary" role="alert">{this.state.alert}</div>
           </div>
         </div>
       </div>
