@@ -7,13 +7,23 @@ pip install -r requirements.txt
 
 
 
-# Getting Started with Create React App
+# 3D One
+3D One allows everyone to 3D scan objects and to manage and view their 3D models in one place
+This project was created using the following technologies:
+Depth Camera and 3D models: Intel RealSense SDK, Open 3D, Open CV,
+Backend: Flask
+Frontend: React.js
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Getting Started
 
-## Available Scripts
+In order to run 3D One, you first need to have an Intel RealSense L515 Camera.
+After plugging the camera to a PC, running 3D One is done by executing the following scripts:
 
-In the project directory, you can run:
+```
+cd [project dir]
+yarn start-api
+npm start
+```
 
 ### `yarn start`
 
