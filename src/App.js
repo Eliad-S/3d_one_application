@@ -17,13 +17,9 @@ import './fixed-left.css';
 import Chart from '../node_modules/chart.js/dist/Chart.js';
 import deleteIcon from './images/delete-white-24dp.svg'
 import micIcon from './images/mic-black-24dp.svg'
-import view3D from './images/view_in_ar_black_48dp.svg'
-import { OBJModel, JSONModel, Tick, MTLModel, DAEModel } from 'react-3d-viewer'
-// import eliad from '../public/e.obj'
-// import eliad from '../api/eliad sellem(1).jpg'
-
+// import view3D from './images/view_in_ar_black_48dp.svg'
+import { OBJModel } from 'react-3d-viewer'
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition'
-import { nodeName } from 'jquery';
 
 
 
@@ -44,7 +40,6 @@ class Container extends React.Component {
     if(this.state.settings !== null) {
       return;
     } 
-    console.log("settingsss")
     fetch('/settings').then(response => {
       if (response.ok) {
         return response.json()
@@ -56,7 +51,7 @@ class Container extends React.Component {
 
       this.setState({
         settings: data,
-      }, () => console.log('current: ' + this.state.settings.number_of_frames))
+      })
     }
     )
       .catch((error) => {
@@ -72,14 +67,11 @@ class Container extends React.Component {
   }
 
   updateSettings(key, value) {
-    console.log(key + ": " + value)
-    console.log(this.state.settings)
     let newSettings = this.state.settings;
     newSettings[key] = value;
-    console.log(newSettings)
     this.setState({
       settings: newSettings
-    }, console.log(this.state.settings))
+    })
   }
 
   renderScreens() {
@@ -158,33 +150,14 @@ class Menu extends React.Component {
   render() {
     return (
       <nav className="navbar navbar-expand-md navbar-dark col card shadow pt-3 fixed-left menu-bg-color">
-        <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+        <div className="collapse navbar-collapse" id="navbarsExampleDefault">
           <h1 className="font-weight-light blue">3D One</h1>
-          <ul class="navbar-nav">
+          <ul className="navbar-nav">
             {this.renderMenuButton("Scan", scanScreenIcon, scanScreenIconWhite, "scan")}
             {this.renderMenuButton("My 3D Models", ModelsScreenIcon, ModelsScreenIconWhite, "my3DModels")}
             <div className="">
               {this.renderMenuButton("Settings", settingsScreenIcon, settingsScreenIconWhite, "settings")}
             </div>
-            {/*        <li class="nav-item">
-                <a class="nav-link" data-class="fixed-left">
-                    <i class="fa fa-arrow-left"></i>
-                    Fixed Left
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" data-class="fixed-top">
-                    <i class="fa fa-arrow-up"></i>
-                    Fixed Top
-                    <small>(original)</small>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" data-class="fixed-right">
-                    <i class="fa fa-arrow-right"></i>
-                    Fixed Right
-                </a>
-            </li> */}
           </ul>
         </div>
       </nav>);
@@ -211,13 +184,9 @@ class ScanScreen extends React.Component {
   }
 
   async componentDidMount() {
-    console.log("connected: " + this.state.connectedToServer);
-    console.log('scanning: ' + this.state.currentlyScanning);
     if (this.state.currentlyScanning && !this.state.connectedToServer) {
-      console.log("Connecting to Server");
       await fetch('/open').then(response => {
         if (response.ok) {
-          console.log("open");
           return response.json()
         }
         else {
@@ -236,7 +205,6 @@ class ScanScreen extends React.Component {
     if (!this.state.currentlyScanning && this.state.connectedToServer) {
       fetch('/close').then(response => {
         if (response.ok) {
-          console.log("close");
           return response.json()
         }
         else {
@@ -271,7 +239,6 @@ class ScanScreen extends React.Component {
       method: 'GET'
     }).then(response => {
       if (response.ok) {
-        console.log("capture");
         this.setState({
           capturing: false,
         })
@@ -295,7 +262,6 @@ class ScanScreen extends React.Component {
       method: 'GET'
     }).then(response => {
       if (response.ok) {
-        console.log("restart");
         return response.json()
       }
       else {
@@ -313,14 +279,12 @@ class ScanScreen extends React.Component {
 
 
   createModel() {
-    console.log(this.modelName.value)
     this.setState({
       isCreatingModel: true
     })
     fetch('/models/create/' + this.modelName.value, {
     }).then(response => {
       if (response.ok) {
-        console.log("model created");
         this.completeScan();
       }
       else {
@@ -335,7 +299,6 @@ class ScanScreen extends React.Component {
   completeScan() {
     fetch('/close').then(response => {
       if (response.ok) {
-        console.log("close");
         return response.json()
       }
       else {
@@ -362,8 +325,6 @@ class ScanScreen extends React.Component {
   }
 
   handleSpeechtoText(transcript) {
-    console.log(transcript + "!!!!")
-    console.log(transcript.localeCompare("capture") === 0)
     if (transcript.localeCompare("capture") === 0) {
       this.capture();
     }
@@ -371,25 +332,25 @@ class ScanScreen extends React.Component {
   render() {
     return (
       <div id="container" className="container-fluid p-3">
-        <div class="row">
-          <div class="col">
+        <div className="row">
+          <div className="col">
             <h1 className="text-left font-weight-light">Scan</h1>
           </div>
           {/* {this.state.settings ? 'gooddd' : 'nottttt'} */}
           <div className="float-right">
             {this.state.currentlyScanning ?
               <>
-                <button type="button" class="btn btn-dark" onClick={this.restartScan}>
+                <button type="button" className="btn btn-dark" onClick={this.restartScan}>
                   <img src={restartIcon} alt="Restart" />&nbsp;
             Restart Scan
             </button> &nbsp;
-            <button type="button" class="btn btn-danger" onClick={this.scanning}>
+            <button type="button" className="btn btn-danger" onClick={this.scanning}>
                   <img src={cancelIcon} alt="Cancel" />&nbsp;
             Cancel Scan
             </button>
               </>
               :
-              <button type="button" class="btn btn-success" onClick={this.scanning}>
+              <button type="button" className="btn btn-success" onClick={this.scanning}>
                 <img src={addIcon} alt="Scan" />&nbsp;
               Scan a New Object
               </button>
@@ -398,29 +359,21 @@ class ScanScreen extends React.Component {
         </div>
         {/* <img id="frame" /> */}
         <div className="row">
-          {console.log(this.state.settings)}
           <div className="col pt-5">
             {this.state.currentlyScanning && this.state.connectedToServer ?
-              // fetch('/feed/aligned')
-              // .then(res=>{return res.blob()})
-              // .then(blob=>{
-              //   var img = URL.createObjectURL(blob);
-              //   // Do whatever with the img
-              //   document.getElementById('frame').setAttribute('src', img);
-              // })
               <>
                 {this.state.numberOfFramesCaptured === this.state.settings.number_of_frames ?
                   <div>
-                    {this.state.isCreatingModel === false ? <div class="modal-dialog shadow" role="document">
-                      <div class="modal-content">
-                        <div class="modal-header">
-                          <h5 class="modal-title">Enter a name for the model</h5>
+                    {this.state.isCreatingModel === false ? <div className="modal-dialog shadow" role="document">
+                      <div className="modal-content">
+                        <div className="modal-header">
+                          <h5 className="modal-title">Enter a name for the model</h5>
                         </div>
-                        <div class="modal-body">
-                          <input class="form-control" type="text" placeholder="Name goes here" ref={(c) => this.modelName = c} name="modelName" ></input>
+                        <div className="modal-body">
+                          <input className="form-control" type="text" placeholder="Name goes here" ref={(c) => this.modelName = c} name="modelName" ></input>
                         </div>
-                        <div class="modal-footer">
-                          <button type="button" class="btn btn-primary" onClick={this.createModel}>Create 3D Model</button>
+                        <div className="modal-footer">
+                          <button type="button" className="btn btn-primary" onClick={this.createModel}>Create 3D Model</button>
                         </div>
                       </div>
                     </div> :
@@ -445,30 +398,29 @@ class ScanScreen extends React.Component {
                           {this.state.settings.voice_control ? <><img src={micIcon} alt="Mic Icon" /><span className="font-weight-light">Voice Control is on,  you may say "capture"</span></> : ''}
                         </h5>
                       </div>
-                      {console.log(this.state.settings.number_of_frames)}
                     </div>
                     {this.state.settings.voice_control ? <Dictaphone handleSpeech={this.handleSpeechtoText} /> : ''}
                       </div>
                     </div>
                     <div className="row">
                       <div className="col-8 mx-auto">
-                      {<TodoPage />}
+                      {<AlignedFrame />}
                       </div>
                     </div>
                   </>
                 }
               </> : ''}
             {this.state.currentlyScanning && !this.state.connectedToServer ?
-              <div><img src={loadingGIF} alt="Loading" /> <br /> <h4 className="font-weight-light mt-3">Waiting for Server</h4></div>
+              <div><img src={loadingGIF} alt="Loading" /> <br /> <h4 className="font-weight-light mt-3">Waiting for Depth Camera</h4></div>
               : ''}
             {!this.state.currentlyScanning ?
               <div className="background-svg">
-                <div class="alert alert-primary" role="alert">
+                <div className="alert alert-primary" role="alert">
                 <h3 className="font-weight-light">Ready to 3D scan your object?</h3>
                 <h4 className="font-weight-light">Click "Scan a New Object"</h4>
                 {/* <img src={scanScreenIcon} alt="Scan" /> */}
                 </div>
-                <div class="alert alert-warning" role="alert">
+                <div className="alert alert-warning" role="alert">
                   Before every scan make sure the settings fit your object!
                 </div>
               </div>
@@ -521,13 +473,11 @@ export const Dictaphone = ({ handleSpeech }) => {
   )
 }
 
-export const TodoPage = () => {
-  // console.log('This will run every second!');
-  const [todo, setTodo] = useState('')
+export const AlignedFrame = () => {
+  const [frame, setFrame] = useState('')
 
   useEffect(() => {
     const interval = setInterval(() => {
-      // console.log('This will run every second!');
       fetch('/feed/aligne').then(response => {
         if (response.ok) {
           return response.blob()
@@ -538,9 +488,7 @@ export const TodoPage = () => {
       }).then(blob => {
         var url = window.URL || window.webkitURL;
         var src = url.createObjectURL(blob);
-        // setTodo("data:image/jpeg;base64," + blob)
-        setTodo(src)
-        // console.log("ok")
+        setFrame(src)
       })
         .catch((error) => {
           console.error('Error:', error);
@@ -549,11 +497,11 @@ export const TodoPage = () => {
 
 
     return () => clearInterval(interval);
-  }, [todo])
+  }, [frame])
 
   return (
     <>
-      <img className="w-100 mt-4 rounded" src={todo} alt="camera feed" />
+      <img className="w-100 mt-4 rounded" src={frame} alt="camera feed" />
     </>
   )
 }
@@ -609,10 +557,8 @@ class My3DModelsScreen extends React.Component {
   }
 
   componentDidMount() {
-    console.log("getting models");
     fetch('/models').then(response => {
       if (response.ok) {
-        console.log("models ok");
         return response.json()
       } else {
         throw new Error('Something went wrong');
@@ -630,7 +576,6 @@ class My3DModelsScreen extends React.Component {
   viewModel(name) {
     fetch('/models/view/' + name).then(response => {
       if (response.ok) {
-        console.log("models ok");
         this.setState({
           isLoading3DModel: false,
         })
@@ -646,11 +591,9 @@ class My3DModelsScreen extends React.Component {
 
   deleteModel(modelName) {
     let name = encodeURIComponent(modelName.trim())
-    console.log(name)
     let newModels;
     fetch('/models/delete/' + name).then(response => {
       if (response.ok) {
-        console.log("Model was successfuly deleted");
         return response.json()
       }
       else {
@@ -666,19 +609,12 @@ class My3DModelsScreen extends React.Component {
       .catch((error) => {
         console.error('Error:', error);
       })
-    // newModels = this.state.models.filter(
-    //   function(model){ return model.name !== modelName });
-    // this.setState({
-    //   models: newModels,
-    // })
   }
-  // <img src={require( `${ model.img_url }` )} className="rounded float-left"  width="300px" height="168px" alt={model.name}/>
-
   render() {
     return (
       <div id="container" className="container-fluid p-3">
         <div className="row">
-          <div class="col">
+          <div className="col">
             <h1 className="text-left font-weight-light">My 3D Models</h1>
             {this.state.spesificModel === null ? this.state.models.reverse().map((model, index, array) => {
               return (
@@ -689,13 +625,13 @@ class My3DModelsScreen extends React.Component {
 
                       <div className="pl-3 float-left">
                         <h3 className="font-weight-light">{model.name}</h3>
-                        <ul class="list-group list-group-flush">
-                          <li class="list-group-item"><button class="btn btn-primary" onClick={() => {this.viewModel(model.name); this.setState({isLoading3DModel: true})}}>View 3D Model</button>
+                        <ul className="list-group list-group-flush">
+                          <li className="list-group-item"><button className="btn btn-primary" onClick={() => {this.viewModel(model.name); this.setState({isLoading3DModel: true})}}>View 3D Model</button>
                           {this.state.isLoading3DModel? <img src={loadingGIF} className="ml-2" width="25px" height="25px" alt="loading"/> : '  '}</li>
-                          <li class="list-group-item"><button class="btn btn-secondary" onClick={() => { this.setState({ spesificModel: this.state.models[array.length - 1 - index] }) }}>View 3D Model Grayscale Preview</button></li>
-                          <li class="list-group-item">Scanned at {model.creation_date}</li>
-                          <li class="list-group-item">Size: {model.size}</li>
-                          <li class="list-group-item">Captured using {model.number_of_frames} frames</li>
+                          <li className="list-group-item"><button className="btn btn-secondary" onClick={() => { this.setState({ spesificModel: this.state.models[array.length - 1 - index] }) }}>View 3D Model Grayscale Preview</button></li>
+                          <li className="list-group-item">Scanned at {model.creation_date}</li>
+                          <li className="list-group-item">Size: {model.size}</li>
+                          <li className="list-group-item">Captured using {model.number_of_frames} frames</li>
                         </ul>
                       </div>
                     </div>
@@ -710,8 +646,8 @@ class My3DModelsScreen extends React.Component {
             }
             ) : <div>
               {this.state.isLoading ? <div><img src={loadingGIF} alt="Loading" /> <br /> <h4 className="font-weight-light mt-3"> Loading 3D Model</h4></div> :
-                <div class="row">
-                  <div class="col">
+                <div className="row">
+                  <div className="col">
                     <h3 className="font-weight-light float-left">{this.state.spesificModel.name}</h3>
                   </div>
                   <div className="col">
@@ -725,13 +661,7 @@ class My3DModelsScreen extends React.Component {
                 </div>}
               <div>
                 <OBJModel src={this.state.spesificModel.model_url} alt='3D Model' width="1000" height="400"
-                  onProgress={() => { this.setState({ isLoading: true }); console.log("loading") }} onLoad={() => { this.setState({ isLoading: false }); console.log("done") }} />
-                {/* <DAEModel src="my_models/idan.dae" alt='3D Model' width="1400" height="800"
-                  onProgress={() => { this.setState({ isLoading: true }); console.log("loading") }} onLoad={() => { this.setState({ isLoading: false }); console.log("done") }} /> */}
-                {/* <MTLModel src={this.state.spesificModel} mtl="my_models/idan.mtl" alt='3D Model' width="1400" height="800"
-                  onProgress={() => { this.setState({ isLoading: true }); console.log("loading") }} onLoad={() => { this.setState({ isLoading: false }); console.log("done") }} /> */}
-
-
+                  onProgress={() => { this.setState({ isLoading: true });}} onLoad={() => { this.setState({ isLoading: false });}} />
               </div></div>}
           </div>
         </div>
@@ -766,7 +696,6 @@ class SettingsScreen extends React.Component {
     if(key != "number_of_frames") {
       value = Number.parseFloat(value).toFixed(2)
     }
-    console.log(value)
     if (key === "obj_radius") {
       this.setState({
         obj_radius: value,
@@ -778,7 +707,6 @@ class SettingsScreen extends React.Component {
       })
     }
     fetch('/settings/' + key + '/' + value).then(response => {
-      // console.log(response.ok)
       if (response.ok) {
         return response
       }
@@ -786,7 +714,6 @@ class SettingsScreen extends React.Component {
         throw new Error('Something went wrong');
       }
     }).then(data => {
-      // console.log(data)
       this.updateSettings(key, value);
     })
       .catch((error) => {
@@ -803,15 +730,8 @@ class SettingsScreen extends React.Component {
     else {
       new_val = 0;
     }
-    // let newSettings = this.state.settings;
-    // newSettings['voice_control'] = value;
-    // console.log(newSettings)
-    // this.setState({
-    //   settings: newSettings
-    // }, console.log(this.state.settings))
 
     fetch('/settings/voice_control/' + new_val).then(response => {
-      // console.log(response.ok)
       if (response.ok) {
         return response
       }
@@ -819,7 +739,6 @@ class SettingsScreen extends React.Component {
         throw new Error('Something went wrong');
       }
     }).then(data => {
-      // console.log(data)
       this.updateSettings("voice_control", value);
     })
       .catch((error) => {
@@ -830,22 +749,22 @@ class SettingsScreen extends React.Component {
   render() {
     return (
       <div id="container" className="container-fluid p-3">
-        <div class="row">
-          <div class="col">
+        <div className="row">
+          <div className="col">
             <h1 className="text-left font-weight-light">Settings</h1>
-            <div class="row m-4 p-4 border-bottom">
-              <div class="col-3 text-right">
-                <label class="form-check-label" htmlFor="voiceCapture">
+            <div className="row m-4 p-4 border-bottom">
+              <div className="col-3 text-right">
+                <label className="form-check-label" htmlFor="voiceCapture">
                   Enable Voice Control:
                 </label>
               </div>
               <div className="col-5 float-left text-left">
-                <input class="form-check-input" type="checkbox" id="voice_control" onClick={this.handleVoiceControlChange} defaultChecked={this.state.settings.voice_control} />
+                <input className="form-check-input" type="checkbox" id="voice_control" onClick={this.handleVoiceControlChange} defaultChecked={this.state.settings.voice_control} />
                 <small>Use Voice Control to capture frames using your voice. Whenever scanning you may say "capture" instead of pressing "capture" button.</small>
               </div>
             </div>
-            <div class="row m-4 p-4 border-bottom">
-              <div class="col-3 text-right">
+            <div className="row m-4 p-4 border-bottom">
+              <div className="col-3 text-right">
                 <label htmlFor="points">Object's Center Distance From Camera in Meters:</label>
               </div>
               <div className="col-5 float-left text-left">
@@ -854,8 +773,8 @@ class SettingsScreen extends React.Component {
                 <small>Accurate input will result a finer merge of all frames.</small>
               </div>
             </div>
-            <div class="row m-4 p-4 border-bottom">
-              <div class="col-3 text-right">
+            <div className="row m-4 p-4 border-bottom">
+              <div className="col-3 text-right">
                 <label htmlFor="points">Object Radius:</label>
               </div>
               <div className="col-5 float-left text-left">
@@ -865,8 +784,8 @@ class SettingsScreen extends React.Component {
                 <small>Accurate input will result a finer cropping of the object from it's environment.</small>
               </div>
             </div>
-            <div class="row m-4 p-4 border-bottom">
-              <div class="col-3 text-right">
+            <div className="row m-4 p-4 border-bottom">
+              <div className="col-3 text-right">
                 <label htmlFor="points">Number of Frames:</label>
               </div>
               <div className="col-5 float-left text-left">
@@ -891,20 +810,6 @@ class SettingsScreen extends React.Component {
 function App() {
   return (
     <div className="App">
-      {/* <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header> */}
       <Container />
     </div>
   );
