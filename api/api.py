@@ -11,6 +11,7 @@ camera = CameraPipe()
 app = Flask(__name__)
 url_base = "../public/my_models"
 
+
 @app.teardown_appcontext
 def shutdown_session(exception=None):
     db_session.remove()
@@ -44,30 +45,35 @@ def open_pipe():
 
 @app.route('/feed/both', methods=['GET'])
 def get_both():
-    print('get requesessssssssss')
-    img_io = camera.get_align_path()
-    print(type(img_io))
+    try:
+        img_io = camera.get_both()
+        print(type(img_io))
+    except Exception as e:
+        print(e)
+        return make_response(jsonify("failed capture frame"), 404)
     return send_file(img_io, mimetype='image/jpeg', as_attachment=False, cache_timeout=0)
 
 
 @app.route('/feed/rgb', methods=['GET'])
 def get_rgb():
-    print('get requesessssssssss')
-    img_io = camera.get_rgb()
-    print(img_io)
-    return send_file(img_io, mimetype='image/jpeg', as_attachment=False)
+    try:
+        img_io = camera.get_rgb()
+        print(type(img_io))
+    except Exception as e:
+        print(e)
+        return make_response(jsonify("failed capture frame"), 404)
+    return send_file(img_io, mimetype='image/jpeg', as_attachment=False, cache_timeout=0)
+
 
 
 @app.route('/feed/aligne', methods=['GET'])
 def get_aligned():
-    print('get requesessssssssss')
     try:
         img_io = camera.get_align_path()
         print(type(img_io))
     except Exception as e:
         print(e)
         return make_response(jsonify("failed capture frame"), 404)
-
 
     return send_file(img_io, mimetype='image/jpeg', as_attachment=False, cache_timeout=0)
 
@@ -78,7 +84,8 @@ def index():
         'name': ['orange', 'apple']
     }
 
-#try catch
+
+# try catch
 @app.route('/models', methods=['GET'])
 def get_models():
     try:
@@ -188,7 +195,8 @@ def create_model(name=None):
         size_bites = os.path.getsize(obj_url)
         size_bytes = size(size_bites) + 'B'
 
-        db_manager.add_item(name=name, obj_url=f'my_models/{name}.obj', img_url=f'my_models/{name}.jpg', size=size_bytes)
+        db_manager.add_item(name=name, obj_url=f'my_models/{name}.obj', img_url=f'my_models/{name}.jpg',
+                            size=size_bytes)
         print("save midel")
         model = db_manager.get_item(name)
         if model is not None:
@@ -210,4 +218,3 @@ def model_viewer(name=None):
     model = db_manager.get_item(name)
     view_model_by_url(f'../public/{model.model_url}', name)
     return make_response(f"{name}'s opened successfully", 200)
-

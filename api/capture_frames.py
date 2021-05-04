@@ -11,6 +11,7 @@ import pyrealsense2 as rs
 import numpy as np
 # Import OpenCV for easy image rendering
 import cv2
+
 NUMBER_OF_CAPTURES = 8
 
 
@@ -41,7 +42,7 @@ def capture_frames(counter=NUMBER_OF_CAPTURES):
 
     # We will be removing the background of objects more than
     #  clipping_distance_in_meters meters away
-    clipping_distance_in_meters = 1 #1 meter
+    clipping_distance_in_meters = 1  # 1 meter
     clipping_distance = clipping_distance_in_meters / depth_scale
 
     # Create an align object
@@ -78,7 +79,8 @@ def capture_frames(counter=NUMBER_OF_CAPTURES):
 
             # Remove background - Set pixels further than clipping_distance to grey
             grey_color = 153
-            depth_image_3d = np.dstack((depth_image,depth_image,depth_image)) #depth image is 1 channel, color is 3 channels
+            depth_image_3d = np.dstack(
+                (depth_image, depth_image, depth_image))  # depth image is 1 channel, color is 3 channels
             bg_removed = np.where((depth_image_3d > clipping_distance) | (depth_image_3d <= 0), grey_color, color_image)
 
             # Render images
@@ -100,7 +102,6 @@ def capture_frames(counter=NUMBER_OF_CAPTURES):
                 # ply.set_option(rs.save_to_ply.option_ply_binary, False)
                 # ply.set_option(rs.save_to_ply.option_ply_normals, True)
 
-
                 print(f"Saving to {captured_frames_counter}.ply...")
 
                 # BGR to RGB
@@ -117,4 +118,4 @@ def capture_frames(counter=NUMBER_OF_CAPTURES):
         pipeline.stop()
 
 
-capture_frames()
+# capture_frames()

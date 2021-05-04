@@ -53,12 +53,6 @@ def point_of_origin(cloud):
     return mesh_mv
 
 
-def crop_point_cloud(cloud):
-    vol = o3d.visualization.read_selection_polygon_volume("cropped.json")
-    chair = vol.crop_point_cloud(cloud)
-    return chair
-
-
 def crop_dinamically(cloud):
     radius = setting_manager.get_val("obj_radius")
     min_height = -0.3
@@ -163,7 +157,7 @@ def mesh2(pcd):
     tri = trimesh.Trimesh(np.asarray(mesh.vertices), np.asarray(mesh.triangles),
                           vertex_normals=np.asarray(mesh.vertex_normals))
 
-    tri.export('stuff.stl')
+    tri.export('test.stl')
 
     mesh.compute_vertex_normals()
 
@@ -179,8 +173,9 @@ def create_3d_model():
     cl, ind = cropped_pcd.remove_radius_outlier(nb_points=30, radius=0.005)
     # draw_point_cloud(cl)
     mesh = mesh3(cl)  # change to obj file
-    draw_point_cloud(mesh)
+    # draw_point_cloud(mesh)
     return mesh
+
 
 def covert_to_obj(mesh, obj_url):
     o3d.io.write_triangle_mesh(obj_url,

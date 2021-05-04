@@ -73,8 +73,4 @@ def count(name):
     count = sess.query(Model).filter(or_(Model.name.like(name), Model.name.like(name_regexp))).count()
     return count
 
-# m = Model("eliads")
-# db_session.add(m)
-# db_session.commit()
 # init_db()
-# reset_db()

@@ -22,7 +22,8 @@ class CameraPipe:
         if self.is_open_pip:
             return
         self.is_open_pip = True
-        print("open pip")
+        print("open pipe")
+        print("open pipe")
         config = rs.config()
         config.enable_stream(rs.stream.depth, 1024, 768, rs.format.z16, 30)
         config.enable_stream(rs.stream.color, 1280, 720, rs.format.rgb8, 30)
@@ -156,18 +157,6 @@ class CameraPipe:
                 rgb_frame = Image.fromarray(color_image)
                 return rgb_frame
 
-            # status = cv2.imwrite('both_frame.png', image)
-            # status = cv2.imwrite('aligned_frame.png', bg_removed)
-            # status = cv2.imwrite('rgb_frame.png', color_image)
-            # print("Image written to file-system : ", status)
-
         except Exception:
             self.close_pipe()
-
-# camera = CameraPipe()
-# camera.open_pipe()
-# camera.get_frame(aligned_option)
-#
-# camera.capture_frame()
-
 
