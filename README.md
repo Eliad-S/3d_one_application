@@ -1,14 +1,6 @@
-OUR README:
-pip install -r requirements.txt
-
-    watchOptions: {
-      ignored: [ ignoredFiles(paths.appSrc), paths.appPublic ]
-    },
-
-
-
 # 3D One
-3D One allows everyone to 3D scan objects and to manage and view their 3D models in one place
+3D One allows everyone to 3D scan objects and to manage and view their 3D models in one place.
+
 This project was created using the following technologies:
 Depth Camera and 3D models: Intel RealSense SDK, Open 3D, Open CV,
 Backend: Flask
@@ -17,10 +9,26 @@ Frontend: React.js
 ## Getting Started
 
 In order to run 3D One, you first need to have an Intel RealSense L515 Camera.
+
+Also, you must have Python 3.6.8 installed.
+
 After plugging the camera to a PC, running 3D One is done by executing the following scripts:
 
 ```
 cd [project dir]
+npm install
+pip install -r requirements.txt
+```
+
+After that, you need to go to node_modules folder and add the following code to _ file:
+
+    watchOptions: {
+      ignored: [ ignoredFiles(paths.appSrc), paths.appPublic ]
+    },
+
+
+Now you ready to run 3D One:
+```
 yarn start-api
 npm start
 ```
