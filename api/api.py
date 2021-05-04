@@ -6,7 +6,8 @@ from db_manager import db_session
 import db_manager
 from utils import covert_to_obj, convert_3d_to_2d, setting_manager, view_model_by_url
 from hurry.filesize import size
-
+import threading
+sem = threading.Semaphore()
 camera = CameraPipe()
 app = Flask(__name__)
 url_base = "../public/my_models"
@@ -25,8 +26,10 @@ def get_current_time():
 @app.route('/close', methods=['GET'])
 def close_pipe():
     try:
+        sem.acquire()
         camera.close_pipe()
         camera.reset_captures()
+        sem.release()
         return make_response(jsonify("camera is off"), 200)
     except Exception as error:
         return make_response(jsonify("failed close camera pipe"), 404)
@@ -35,8 +38,10 @@ def close_pipe():
 @app.route('/open', methods=['GET'])
 def open_pipe():
     try:
+        sem.acquire()
         camera.open_pipe()
         camera.reset_captures()
+        sem.release()
         return make_response(jsonify("camera is on"), 200)
 
     except Exception as error:
@@ -46,8 +51,10 @@ def open_pipe():
 @app.route('/feed/both', methods=['GET'])
 def get_both():
     try:
+        sem.acquire()
         img_io = camera.get_both()
         print(type(img_io))
+        sem.release()
     except Exception as e:
         print(e)
         return make_response(jsonify("failed capture frame"), 404)
@@ -57,8 +64,10 @@ def get_both():
 @app.route('/feed/rgb', methods=['GET'])
 def get_rgb():
     try:
+        sem.acquire()
         img_io = camera.get_rgb()
         print(type(img_io))
+        sem.release()
     except Exception as e:
         print(e)
         return make_response(jsonify("failed capture frame"), 404)
@@ -69,8 +78,10 @@ def get_rgb():
 @app.route('/feed/aligne', methods=['GET'])
 def get_aligned():
     try:
+        sem.acquire()
         img_io = camera.get_align_path()
         print(type(img_io))
+        sem.release()
     except Exception as e:
         print(e)
         return make_response(jsonify("failed capture frame"), 404)
@@ -108,7 +119,9 @@ def get_models_by_name(name=None):
 @app.route('/capture', methods=['GET'])
 def capture():
     try:
+        sem.acquire()
         camera.capture_frame()
+        sem.release()
         # if camera.captured_frames_counter == setting_manager.get_val("number_of_frames"):
         #     camera.close_pipe()
         #     camera.reset_captures()

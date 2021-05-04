@@ -23,7 +23,6 @@ class CameraPipe:
             return
         self.is_open_pip = True
         print("open pipe")
-        print("open pipe")
         config = rs.config()
         config.enable_stream(rs.stream.depth, 1024, 768, rs.format.z16, 30)
         config.enable_stream(rs.stream.color, 1280, 720, rs.format.rgb8, 30)
