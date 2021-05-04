@@ -28,7 +28,7 @@ npm install
 pip install -r requirements.txt
 ```
 
-After that, you need to go to ```node_modules\react-scripts\config\webpackDevServer.config.js``` file and add the following code under ```watchOption```:
+After that, you need to go to ```node_modules\react-scripts\config\webpackDevServer.config.js``` file and add the following code under ```watchOptions```:
 
     watchOptions: {
       ignored: [ ignoredFiles(paths.appSrc), paths.appPublic ]
