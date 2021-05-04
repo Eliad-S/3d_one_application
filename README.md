@@ -2,17 +2,25 @@
 3D One allows everyone to 3D scan objects and to manage and view their 3D models in one place.
 
 This project was created using the following technologies:
-Depth Camera and 3D models: Intel RealSense SDK, Open 3D, Open CV,
-Backend: Flask
-Frontend: React.js
+ * Depth Camera and 3D Modeling:
+    * Intel RealSense SDK
+    * Open 3D
+    * Open CV
+ * Backend:
+    * Server: Flask
+    * DB: SQL Alchemy
+ * Frontend
+    * React.js
+
+## Application Requirements
+
+In order to run 3D One, you need the following:
+* Intel RealSense L515 Camera plugged into a USB 3 input in a PC
+* Python 3.6.8 installed
 
 ## Getting Started
 
-In order to run 3D One, you first need to have an Intel RealSense L515 Camera.
-
-Also, you must have Python 3.6.8 installed.
-
-After plugging the camera to a PC, running 3D One is done by executing the following scripts:
+First we need to install all the Python and Node.js packages used in this project:
 
 ```
 cd [project dir]
