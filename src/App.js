@@ -554,7 +554,6 @@ class My3DModelsScreen extends React.Component {
       spesificModelColored: null,
       isLoading: true,
       isLoading3DModel: false,
-      recreating: false,
     };
   }
 
@@ -575,25 +574,6 @@ class My3DModelsScreen extends React.Component {
       })
   }
 
-  recreateModel(name) {
-    this.setState({
-      recreating: true
-    })
-    fetch('/models/create/' + name, {
-    }).then(response => {
-      if (response.ok) {
-        this.setState({
-          recreating: false,
-        });
-      }
-      else {
-        throw new Error('Something went wrong');
-      }
-    })
-      .catch((error) => {
-        console.error('Error:', error);
-      })
-  }
 
 
   viewModel(name) {
@@ -659,7 +639,6 @@ class My3DModelsScreen extends React.Component {
                           <li className="list-group-item">Scanned at {model.creation_date}</li>
                           <li className="list-group-item">Size: {model.size}</li>
                           <li className="list-group-item">Captured using {model.number_of_frames} frames</li>
-                          {index === 0 ? this.state.recreating === false ? <li className="list-group-item"><button className="btn btn-secondary" onClick={() => {this.recreateModel(model.name); this.setState({recreating: true})}}>Recreate 3D Model</button></li> : <li className="list-group-item">Recreating Model <img src={loadingGIF} className="ml-2" width="25px" height="25px" alt="loading"/></li> : ''}     
                         </ul>
                       </div>
                     </div>
@@ -704,7 +683,8 @@ class SettingsScreen extends React.Component {
     this.state = {
       settings: props.settings,
       obj_radius: props.settings['obj_radius'],
-      number_of_frames: props.settings['number_of_frames']
+      number_of_frames: props.settings['number_of_frames'],
+      recreating: false,
     };
     this.handleVoiceControlChange = this.handleVoiceControlChange.bind(this);
     this.handleObjParamsChange = this.handleObjParamsChange.bind(this);
@@ -778,6 +758,26 @@ class SettingsScreen extends React.Component {
       })
   }
 
+  recreateModel() {
+    this.setState({
+      recreating: true
+    });
+    fetch('/models/recreate', {
+    }).then(response => {
+      if (response.ok) {
+        this.setState({
+          recreating: false,
+        });
+      }
+      else {
+        throw new Error('Something went wrong');
+      }
+    })
+      .catch((error) => {
+        console.error('Error:', error);
+      })
+  }
+
   render() {
     return (
       <div id="container" className="container-fluid p-3">
@@ -827,7 +827,16 @@ class SettingsScreen extends React.Component {
                 <small>4 is the recommended number of frames.</small>
               </div>
             </div>
-
+            <div className="row m-4 p-4 border-bottom">
+              <div className="col-3 text-right">
+                <label htmlFor="points">Recreate Last 3D Model:</label>
+              </div>
+              <div className="col-5 float-left text-left">
+              {this.state.recreating === false ? <button className="btn btn-secondary" onClick={() => {this.recreateModel()}}>Recreate 3D Model</button> : <>Recreating Model <img src={loadingGIF} className="ml-2" width="25px" height="25px" alt="loading"/></>}     
+                <br />
+                <small>Use last object's frames to reacreate a 3D Model with new settings. <br/>The number of frames setting will not affect recreation.</small>
+              </div>
+            </div>
           </div>
         </div>
       </div>
