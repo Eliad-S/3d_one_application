@@ -362,7 +362,7 @@ class ScanScreen extends React.Component {
           <div className="col pt-5">
             {this.state.currentlyScanning && this.state.connectedToServer ?
               <>
-                {this.state.numberOfFramesCaptured === this.state.settings.number_of_frames ?
+                {this.state.numberOfFramesCaptured >= this.state.settings.number_of_frames ?
                   <div>
                     {this.state.isCreatingModel === false ? <div className="modal-dialog shadow" role="document">
                       <div className="modal-content">
@@ -580,13 +580,15 @@ class My3DModelsScreen extends React.Component {
         this.setState({
           isLoading3DModel: false,
         })
-        return response.json()
       } else {
         throw new Error('Something went wrong');
       }
     })
       .catch((error) => {
         console.error('Error:', error);
+        this.setState({
+          isLoading3DModel: false,
+        })
       })
   }
 
@@ -628,7 +630,7 @@ class My3DModelsScreen extends React.Component {
                         <h3 className="font-weight-light">{model.name}</h3>
                         <ul className="list-group list-group-flush">
                           <li className="list-group-item"><button className="btn btn-primary" onClick={() => {this.viewModel(model.name); this.setState({isLoading3DModel: true, spesificModelColored: this.state.models[array.length - 1 - index] })}}>View 3D Model</button>
-                          {this.state.isLoading3DModel && this.state.spesificModel == index ? <img src={loadingGIF} className="ml-2" width="25px" height="25px" alt="loading"/> : '  '}</li>
+                          {this.state.isLoading3DModel && this.state.spesificModelColored === model ? <img src={loadingGIF} className="ml-2" width="25px" height="25px" alt="loading"/> : '  '}</li>
                           <li className="list-group-item"><button className="btn btn-secondary" onClick={() => { this.setState({ spesificModel: this.state.models[array.length - 1 - index] }) }}>View 3D Model Grayscale Preview</button></li>
                           <li className="list-group-item">Scanned at {model.creation_date}</li>
                           <li className="list-group-item">Size: {model.size}</li>
@@ -694,7 +696,6 @@ class SettingsScreen extends React.Component {
   handleObjParamsChange(event) {
     let key = event.target.id;
     let value = event.target.value;
-    console.log(key)
     if( key === "obj_distance") {
       value = Number.parseFloat(value).toFixed(3)
     }
