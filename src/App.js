@@ -768,7 +768,7 @@ class SettingsScreen extends React.Component {
                 <label htmlFor="points">Object's Center Distance From Camera in Meters:</label>
               </div>
               <div className="col-5 float-left text-left">
-                <input name="radius" type="number" id="obj_distance" step="0.01" className="form-control"
+                <input name="radius" type="number" id="obj_distance" step="0.001" className="form-control"
                   placeholder={this.state.settings.obj_distance} defaultValue={this.state.settings.obj_distance} onChange={this.handleObjParamsChange} ref={el => this.radius = el} required />
                 <small>Accurate input will result a finer merge of all frames.</small>
               </div>
