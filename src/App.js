@@ -554,6 +554,7 @@ class My3DModelsScreen extends React.Component {
       spesificModelColored: null,
       isLoading: true,
       isLoading3DModel: false,
+      recreating: false,
     };
   }
 
@@ -573,6 +574,27 @@ class My3DModelsScreen extends React.Component {
         console.error('Error:', error);
       })
   }
+
+  recreateModel(name) {
+    this.setState({
+      recreating: true
+    })
+    fetch('/models/create/' + name, {
+    }).then(response => {
+      if (response.ok) {
+        this.setState({
+          recreating: false,
+        });
+      }
+      else {
+        throw new Error('Something went wrong');
+      }
+    })
+      .catch((error) => {
+        console.error('Error:', error);
+      })
+  }
+
 
   viewModel(name) {
     fetch('/models/view/' + name).then(response => {
@@ -613,6 +635,8 @@ class My3DModelsScreen extends React.Component {
         console.error('Error:', error);
       })
   }
+
+  
   render() {
     return (
       <div id="container" className="container-fluid p-3">
@@ -635,6 +659,8 @@ class My3DModelsScreen extends React.Component {
                           <li className="list-group-item">Scanned at {model.creation_date}</li>
                           <li className="list-group-item">Size: {model.size}</li>
                           <li className="list-group-item">Captured using {model.number_of_frames} frames</li>
+                          {index == 0 ? <li className="list-group-item"><button className="btn btn-secondary" onClick={() => {this.recreateModel(model.name); this.setState({recreating: true})}}>Recreate 3D Model</button>
+                          {this.state.recreating ? <img src={loadingGIF} className="ml-2" width="25px" height="25px" alt="loading"/> : '  '}</li> : ''}
                         </ul>
                       </div>
                     </div>
