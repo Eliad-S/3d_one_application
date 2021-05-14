@@ -693,20 +693,25 @@ class SettingsScreen extends React.Component {
   handleObjParamsChange(event) {
     let key = event.target.id;
     let value = event.target.value;
-    if(key != "number_of_frames") {
+    console.log(key)
+    if( key === "obj_distance") {
+      value = Number.parseFloat(value).toFixed(3)
+    }
+    else if(key != "number_of_frames") {
       value = Number.parseFloat(value).toFixed(2)
     }
-    if (key === "obj_radius") {
+    else if (key === "obj_radius") {
       this.setState({
         obj_radius: value,
       })
     }
-    if (key === "number_of_frames") {
+    else if (key === "number_of_frames") {
       this.setState({
         number_of_frames: event.target.value,
       })
     }
     fetch('/settings/' + key + '/' + value).then(response => {
+
       if (response.ok) {
         return response
       }
@@ -768,7 +773,7 @@ class SettingsScreen extends React.Component {
                 <label htmlFor="points">Object's Center Distance From Camera in Meters:</label>
               </div>
               <div className="col-5 float-left text-left">
-                <input name="radius" type="number" id="obj_distance" step="0.001" className="form-control"
+                <input name="radius" type="number" id="obj_distance" step="0.005" className="form-control"
                   placeholder={this.state.settings.obj_distance} defaultValue={this.state.settings.obj_distance} onChange={this.handleObjParamsChange} ref={el => this.radius = el} required />
                 <small>Accurate input will result a finer merge of all frames.</small>
               </div>
