@@ -551,6 +551,7 @@ class My3DModelsScreen extends React.Component {
     this.state = {
       models: [],
       spesificModel: null,
+      spesificModelColored: null,
       isLoading: true,
       isLoading3DModel: false,
     };
@@ -626,8 +627,8 @@ class My3DModelsScreen extends React.Component {
                       <div className="pl-3 float-left">
                         <h3 className="font-weight-light">{model.name}</h3>
                         <ul className="list-group list-group-flush">
-                          <li className="list-group-item"><button className="btn btn-primary" onClick={() => {this.viewModel(model.name); this.setState({isLoading3DModel: true})}}>View 3D Model</button>
-                          {this.state.isLoading3DModel? <img src={loadingGIF} className="ml-2" width="25px" height="25px" alt="loading"/> : '  '}</li>
+                          <li className="list-group-item"><button className="btn btn-primary" onClick={() => {this.viewModel(model.name); this.setState({isLoading3DModel: true, spesificModelColored: this.state.models[array.length - 1 - index] })}}>View 3D Model</button>
+                          {this.state.isLoading3DModel && this.state.spesificModel == index ? <img src={loadingGIF} className="ml-2" width="25px" height="25px" alt="loading"/> : '  '}</li>
                           <li className="list-group-item"><button className="btn btn-secondary" onClick={() => { this.setState({ spesificModel: this.state.models[array.length - 1 - index] }) }}>View 3D Model Grayscale Preview</button></li>
                           <li className="list-group-item">Scanned at {model.creation_date}</li>
                           <li className="list-group-item">Size: {model.size}</li>
@@ -773,7 +774,7 @@ class SettingsScreen extends React.Component {
                 <label htmlFor="points">Object's Center Distance From Camera in Meters:</label>
               </div>
               <div className="col-5 float-left text-left">
-                <input name="radius" type="number" id="obj_distance" step="0.005" className="form-control"
+                <input name="radius" type="number" id="obj_distance" step="0.001" className="form-control"
                   placeholder={this.state.settings.obj_distance} defaultValue={this.state.settings.obj_distance} onChange={this.handleObjParamsChange} ref={el => this.radius = el} required />
                 <small>Accurate input will result a finer merge of all frames.</small>
               </div>
