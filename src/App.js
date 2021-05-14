@@ -659,7 +659,7 @@ class My3DModelsScreen extends React.Component {
                           <li className="list-group-item">Scanned at {model.creation_date}</li>
                           <li className="list-group-item">Size: {model.size}</li>
                           <li className="list-group-item">Captured using {model.number_of_frames} frames</li>
-                          {index === 0 ? this.state.recreating === false ? <li className="list-group-item"><button className="btn btn-secondary" onClick={() => {this.recreateModel(model.name); this.setState({recreating: true})}}>Recreate 3D Model</button></li> : <> Recreating Model <img src={loadingGIF} className="ml-2" width="25px" height="25px" alt="loading"/></> : ''}     
+                          {index === 0 ? this.state.recreating === false ? <li className="list-group-item"><button className="btn btn-secondary" onClick={() => {this.recreateModel(model.name); this.setState({recreating: true})}}>Recreate 3D Model</button></li> : <li className="list-group-item">Recreating Model <img src={loadingGIF} className="ml-2" width="25px" height="25px" alt="loading"/></li> : ''}     
                         </ul>
                       </div>
                     </div>
