@@ -86,6 +86,7 @@ class Container extends React.Component {
       );
     }
     if (this.state.current_screen === "settings") {
+      this.componentDidMount()
       return (
         <SettingsScreen onChildClick={this.updateSettings} settings={this.state.settings} />
       );
@@ -778,12 +779,12 @@ class SettingsScreen extends React.Component {
       })
   }
 
-  componentWillReceiveProps(settings) {
-    if (settings.settings) {
-      settings = settings.settings;
-    }
-    this.setState({ settings: settings });
-  }
+  // componentWillReceiveProps(settings) {
+  //   if (settings.settings) {
+  //     settings = settings.settings;
+  //   }
+  //   this.setState({ settings: settings });
+  // }
 
   render() {
     return (
