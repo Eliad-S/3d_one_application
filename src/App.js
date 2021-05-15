@@ -86,7 +86,24 @@ class Container extends React.Component {
       );
     }
     if (this.state.current_screen === "settings") {
-      this.componentDidMount()
+      fetch('/settings').then(response => {
+        if (response.ok) {
+          return response.json()
+        }
+        else {
+          throw new Error('Something went wrong');
+        }
+      }).then(data => {
+  
+        this.setState({
+          settings: data,
+        })
+      }
+      )
+        .catch((error) => {
+          console.error('Error:', error);
+        })
+    }
       return (
         <SettingsScreen onChildClick={this.updateSettings} settings={this.state.settings} />
       );
