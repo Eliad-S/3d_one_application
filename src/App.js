@@ -704,15 +704,15 @@ class SettingsScreen extends React.Component {
     if( key === "obj_distance") {
       value = Number.parseFloat(value).toFixed(3)
     }
-    else if(key != "number_of_frames") {
+    if(key != "number_of_frames") {
       value = Number.parseFloat(value).toFixed(2)
     }
-    else if (key === "obj_radius") {
+    if (key === "obj_radius") {
       this.setState({
         obj_radius: value,
       })
     }
-    else if (key === "number_of_frames") {
+    if (key === "number_of_frames") {
       this.setState({
         number_of_frames: event.target.value,
       })
@@ -762,7 +762,7 @@ class SettingsScreen extends React.Component {
     this.setState({
       recreating: true
     });
-    fetch('/models/recreate', {
+    fetch('/recreate', {
     }).then(response => {
       if (response.ok) {
         this.setState({
@@ -832,7 +832,13 @@ class SettingsScreen extends React.Component {
                 <label htmlFor="points">Recreate Last 3D Model:</label>
               </div>
               <div className="col-5 float-left text-left">
-              {this.state.recreating === false ? <button className="btn btn-secondary" onClick={() => {this.recreateModel()}}>Recreate 3D Model</button> : <>Recreating Model <img src={loadingGIF} className="ml-2" width="25px" height="25px" alt="loading"/></>}     
+              {this.state.settings.last_object != '' && this.state.settings.last_object != undefined ?  [
+                this.state.recreating === false ?
+                  <button className="btn btn-secondary" onClick={() => {this.recreateModel()}}>Recreate "{this.state.settings.last_object}" 3D Model Using {this.state.settings.last_NOF} frames</button>
+                  :
+                  <>Recreating "{this.state.settings.last_object}" 3D Model using {this.state.settings.last_NOF} frames <img src={loadingGIF} className="ml-2" width="25px" height="25px" alt="loading"/></>
+                ]: 
+               "No frames in cache"} 
                 <br />
                 <small>Use last object's frames to reacreate a 3D Model with new settings. <br/>The number of frames setting will not affect recreation.</small>
               </div>
