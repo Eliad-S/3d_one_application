@@ -55,7 +55,7 @@ def point_of_origin(cloud):
 
 def crop_dinamically(cloud):
     radius = setting_manager.get_val("obj_radius")
-    min_height = -0.1
+    min_height = -0.15
     max_height = 1
     corners = np.array([[radius, max_height, radius],
                         [-radius, min_height, -radius],

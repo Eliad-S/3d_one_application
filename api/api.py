@@ -121,10 +121,9 @@ def capture():
     try:
         sem.acquire()
         camera.capture_frame()
+        if camera.get_current_frame() == 2:
+            setting_manager.modify_val('last_object', "")
         sem.release()
-        # if camera.captured_frames_counter == setting_manager.get_val("number_of_frames"):
-        #     camera.close_pipe()
-        #     camera.reset_captures()
         return {"succeed closing pipe": 200}
     except Exception as error:
         print(error)
@@ -207,11 +206,52 @@ def create_model(name=None):
         convert_3d_to_2d(mesh, img_url)
         size_bites = os.path.getsize(obj_url)
         size_bytes = size(size_bites) + 'B'
+        nof = setting_manager.get_val('number_of_frames')
+        db_manager.add_item(name=name, obj_url=f'my_models/{name}.obj', img_url=f'my_models/{name}.jpg',
+                            size=size_bytes, nof=nof)
+        print("save model")
+        model = db_manager.get_item(name)
+        setting_manager.modify_val("last_object", name)
+        setting_manager.modify_val("last_NOF", nof)
+
+        if model is not None:
+            return model.serialize
+        return make_response(jsonify("model was not found in db"), 404)
+    except Exception as error:
+        print(error)
+        if os.path.exists(obj_url):
+            os.remove(obj_url)
+        if os.path.exists(img_url):
+            os.remove(img_url)
+        return make_response(jsonify("failed creating model"), 404)
+
+
+@app.route('/models/recreate', methods=['GET'])
+def recreate_model():
+    name = setting_manager.get_val("last_object")
+    if name == "":
+        return make_response(jsonify("failed to recreate object"), 404)
+    nof = setting_manager.get_val("last_NOF")
+    try:
+        mesh = camera.create_model()
+        count = db_manager.count(name)
+        if count:
+            name = f'{name}({count})'
+        obj_url = f'{url_base}/{name}.obj'
+        img_url = f'{url_base}/{name}.jpg'
+
+        print("convert obj")
+        covert_to_obj(mesh, obj_url)
+        print("convert img")
+        convert_3d_to_2d(mesh, img_url)
+        size_bites = os.path.getsize(obj_url)
+        size_bytes = size(size_bites) + 'B'
 
         db_manager.add_item(name=name, obj_url=f'my_models/{name}.obj', img_url=f'my_models/{name}.jpg',
-                            size=size_bytes)
-        print("save midel")
+                            size=size_bytes, nof=nof)
+        print("save model")
         model = db_manager.get_item(name)
+        setting_manager.modify_val("last_object", name)
         if model is not None:
             return model.serialize
         return make_response(jsonify("model was not found in db"), 404)

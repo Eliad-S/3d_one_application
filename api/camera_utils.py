@@ -83,6 +83,8 @@ class CameraPipe:
     def reset_captures(self):
         self.captured_frames_counter = 1
 
+    def get_current_frame(self):
+        return self.captured_frames_counter
     # create a 3d model consisting of the captured frames
     # check if there is enough frames
     def create_model(self):

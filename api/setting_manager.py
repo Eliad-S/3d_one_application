@@ -1,5 +1,6 @@
 import json
 import os
+import threading
 
 file_name = "setting.json"
 
@@ -42,6 +43,8 @@ class Setting_Manager:
         settings['obj_distance'] = 0.8
         settings['obj_radius'] = 0.35
         settings['voice_control'] = True
+        settings['last_object'] = ""
+        settings['last_NOF'] = 4
 
         try:
             with open(file_name, 'w') as outfile:

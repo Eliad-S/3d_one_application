@@ -14,11 +14,11 @@ class Model(Base):
     creation_date = Column(DateTime(20), nullable=False, default=datetime.utcnow)
     number_of_frames = Column(Integer, unique=False, nullable=False, default=4)
 
-    def __init__(self, name, model_url='default.obj', img_url='default.jpg', size="0B", number_of_frames=4):
+    def __init__(self, name, model_url='default.obj', img_url='default.jpg', size="0B", nof=4):
         self.name = name
         self.model_url = model_url
         self.img_url = img_url
-        self.number_of_frames = number_of_frames
+        self.number_of_frames = nof
         self.size = size
         print(f"\nThe size of {model_url} is :{self.size} Bytes")
 

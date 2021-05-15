@@ -13,13 +13,13 @@ Base = declarative_base()
 Base.query = db_session.query_property()
 
 
-def add_item(name, obj_url, img_url, size):
+def add_item(name, obj_url, img_url, size, nof):
     from models import Model
     print(f'{name} {obj_url} {img_url}')
     try:
         print('start')
         sess = db_session()
-        model = Model(name, obj_url, img_url, size)
+        model = Model(name=name, model_url=obj_url, img_url=img_url, size=size, nof=nof)
         sess.add(model)
         print('\nADDING {}'.format(model))
         sess.flush()

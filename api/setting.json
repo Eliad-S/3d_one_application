@@ -1,6 +1,8 @@
 {
+    "last_NOF": 4,
+    "last_object": "",
     "number_of_frames": 4,
     "obj_distance": 0.8,
-    "obj_radius": 0.20,
+    "obj_radius": 0.35,
     "voice_control": true
 }
