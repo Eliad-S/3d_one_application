@@ -37,9 +37,9 @@ class Container extends React.Component {
   }
 
   componentDidMount() {
-    // if(this.state.settings !== null) {
-    //   return;
-    // } 
+    if(this.state.settings !== null) {
+      return;
+    } 
     fetch('/settings').then(response => {
       if (response.ok) {
         return response.json()

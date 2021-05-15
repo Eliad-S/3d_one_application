@@ -32,6 +32,7 @@ def close_pipe():
         sem.release()
         return make_response(jsonify("camera is off"), 200)
     except Exception as error:
+        sem.release()
         return make_response(jsonify("failed close camera pipe"), 404)
 
 
@@ -45,6 +46,7 @@ def open_pipe():
         return make_response(jsonify("camera is on"), 200)
 
     except Exception as error:
+        sem.release()
         return make_response(jsonify("failed open pipe"), 404)
 
 
@@ -57,6 +59,7 @@ def get_both():
         sem.release()
     except Exception as e:
         print(e)
+        sem.release()
         return make_response(jsonify("failed capture frame"), 404)
     return send_file(img_io, mimetype='image/jpeg', as_attachment=False, cache_timeout=0)
 
@@ -70,6 +73,7 @@ def get_rgb():
         sem.release()
     except Exception as e:
         print(e)
+        sem.release()
         return make_response(jsonify("failed capture frame"), 404)
     return send_file(img_io, mimetype='image/jpeg', as_attachment=False, cache_timeout=0)
 
@@ -84,6 +88,7 @@ def get_aligned():
         sem.release()
     except Exception as e:
         print(e)
+        sem.release()
         return make_response(jsonify("failed capture frame"), 404)
 
     return send_file(img_io, mimetype='image/jpeg', as_attachment=False, cache_timeout=0)
@@ -251,7 +256,6 @@ def recreate_model():
                             size=size_bytes, nof=nof)
         print("save model")
         model = db_manager.get_item(name)
-        setting_manager.modify_val("last_object", name)
         if model is not None:
             return model.serialize
         return make_response(jsonify("model was not found in db"), 404)
