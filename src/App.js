@@ -61,6 +61,25 @@ class Container extends React.Component {
 
 
   handleMenuButtonClick(clickedButton) {
+    if (clickedButton === "settings") {
+      fetch('/settings').then(response => {
+        if (response.ok) {
+          return response.json()
+        }
+        else {
+          throw new Error('Something went wrong');
+        }
+      }).then(data => {
+  
+        this.setState({
+          settings: data,
+        })
+      }
+      )
+        .catch((error) => {
+          console.error('Error:', error);
+        })
+    }
     this.setState({
       current_screen: clickedButton,
     });
@@ -86,24 +105,6 @@ class Container extends React.Component {
       );
     }
     if (this.state.current_screen === "settings") {
-      fetch('/settings').then(response => {
-        if (response.ok) {
-          return response.json()
-        }
-        else {
-          throw new Error('Something went wrong');
-        }
-      }).then(data => {
-  
-        this.setState({
-          settings: data,
-        })
-      }
-      )
-        .catch((error) => {
-          console.error('Error:', error);
-        })
-    }
       return (
         <SettingsScreen onChildClick={this.updateSettings} settings={this.state.settings} />
       );
