@@ -778,6 +778,13 @@ class SettingsScreen extends React.Component {
       })
   }
 
+  componentWillReceiveProps(settings) {
+    if (settings.settings) {
+      settings = settings.settings;
+    }
+    this.setState({ settings: settings });
+  }
+
   render() {
     return (
       <div id="container" className="container-fluid p-3">
