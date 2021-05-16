@@ -61,6 +61,24 @@ class Container extends React.Component {
 
 
   handleMenuButtonClick(clickedButton) {
+    fetch('/settings').then(response => {
+      if (response.ok) {
+        return response.json()
+      }
+      else {
+        throw new Error('Something went wrong');
+      }
+    }).then(data => {
+      if(this.state.settings != data) {
+        this.setState({
+          settings: data,
+        })
+      }
+    }
+    )
+      .catch((error) => {
+        console.error('Error:', error);
+      })
     this.setState({
       current_screen: clickedButton,
     });
