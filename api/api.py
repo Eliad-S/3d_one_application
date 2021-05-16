@@ -26,10 +26,12 @@ def get_current_time():
 @app.route('/close', methods=['GET'])
 def close_pipe():
     try:
+        print("sem require")
         sem.acquire()
         camera.close_pipe()
         camera.reset_captures()
         sem.release()
+        print("sem release")
         return make_response(jsonify("camera is off"), 200)
     except Exception as error:
         sem.release()
@@ -39,10 +41,12 @@ def close_pipe():
 @app.route('/open', methods=['GET'])
 def open_pipe():
     try:
+        print("sem require")
         sem.acquire()
         camera.open_pipe()
         camera.reset_captures()
         sem.release()
+        print("sem release")
         return make_response(jsonify("camera is on"), 200)
 
     except Exception as error:
@@ -82,10 +86,12 @@ def get_rgb():
 @app.route('/feed/aligne', methods=['GET'])
 def get_aligned():
     try:
+        print("sem require")
         sem.acquire()
         img_io = camera.get_align_path()
         print(type(img_io))
         sem.release()
+        print("sem release")
     except Exception as e:
         print(e)
         sem.release()
