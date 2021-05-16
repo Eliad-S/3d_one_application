@@ -201,9 +201,11 @@ class ScanScreen extends React.Component {
     this.completeScan = this.completeScan.bind(this);
   }
 
-  async componentDidMount() {
-    if (this.state.currentlyScanning && !this.state.connectedToServer) {
-      await fetch('/open').then(response => {
+  componentDidMount() {
+    console.log('currentlyScanning: ' + this.state.currentlyScanning)
+    console.log('connectedToServer: ' + this.state.connectedToServer)
+    if (this.state.currentlyScanning) {
+      fetch('/open').then(response => {
         if (response.ok) {
           return response.json()
         }
