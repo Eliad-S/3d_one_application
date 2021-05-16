@@ -61,25 +61,6 @@ class Container extends React.Component {
 
 
   handleMenuButtonClick(clickedButton) {
-    if (clickedButton === "settings") {
-      fetch('/settings').then(response => {
-        if (response.ok) {
-          return response.json()
-        }
-        else {
-          throw new Error('Something went wrong');
-        }
-      }).then(data => {
-  
-        this.setState({
-          settings: data,
-        })
-      }
-      )
-        .catch((error) => {
-          console.error('Error:', error);
-        })
-    }
     this.setState({
       current_screen: clickedButton,
     });
@@ -251,8 +232,11 @@ class ScanScreen extends React.Component {
   }
 
   capture() {
+    let newSettings = this.state.settings
+    newSettings['last_object'] = ''
     this.setState({
       capturing: true,
+      settings: newSettings,
     })
     fetch('/capture', {
       method: 'GET'
@@ -298,8 +282,11 @@ class ScanScreen extends React.Component {
 
 
   createModel() {
+    let newSettings = this.state.settings
+    newSettings['last_object'] = this.modelName.value;
     this.setState({
-      isCreatingModel: true
+      isCreatingModel: true,
+      settings: newSettings,
     })
     fetch('/models/create/' + this.modelName.value, {
     }).then(response => {
