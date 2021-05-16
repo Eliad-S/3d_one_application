@@ -69,7 +69,7 @@ class Container extends React.Component {
         throw new Error('Something went wrong');
       }
     }).then(data => {
-      if(this.state.settings != data) {
+      if(this.state.settings['last_object'] !== data['last_object']) {
         this.setState({
           settings: data,
         })
@@ -250,11 +250,8 @@ class ScanScreen extends React.Component {
   }
 
   capture() {
-    let newSettings = this.state.settings
-    newSettings['last_object'] = ''
     this.setState({
       capturing: true,
-      settings: newSettings,
     })
     fetch('/capture', {
       method: 'GET'
@@ -300,11 +297,8 @@ class ScanScreen extends React.Component {
 
 
   createModel() {
-    let newSettings = this.state.settings
-    newSettings['last_object'] = this.modelName.value;
     this.setState({
       isCreatingModel: true,
-      settings: newSettings,
     })
     fetch('/models/create/' + this.modelName.value, {
     }).then(response => {
@@ -386,6 +380,7 @@ class ScanScreen extends React.Component {
           <div className="col pt-5">
             {this.state.currentlyScanning && this.state.connectedToServer ?
               <>
+              {console.log(this.state.settings)}
                 {this.state.numberOfFramesCaptured >= this.state.settings.number_of_frames ?
                   <div>
                     {this.state.isCreatingModel === false ? <div className="modal-dialog shadow" role="document">
@@ -882,6 +877,9 @@ class SettingsScreen extends React.Component {
 
 
   componentWillReceiveProps(settings) {
+    if (settings.settings) {
+      settings = settings.settings;
+    }
     this.setState({ settings: settings });
   }
 }
