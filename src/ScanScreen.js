@@ -5,7 +5,7 @@ import addIcon from "./images/add-white-24dp.svg";
 import loadingGIF from "./images/loading.gif";
 import micIcon from "./images/mic-black-24dp.svg";
 import Chart from "../node_modules/chart.js/dist/Chart.js";
-import {SpeechRecognition, useSpeechRecognition} from "react-speech-recognition";
+import Dictaphone from "./Dictaphone";
 
 export default class ScanScreen extends React.Component {
   constructor(props) {
@@ -440,52 +440,5 @@ export const AlignedFrame = () => {
     <>
       <img className="w-100 mt-4 rounded" src={frame} alt="camera feed" />
     </>
-  );
-};
-
-export const Dictaphone = ({ handleSpeech }) => {
-  const commands = [
-    {
-      command: "capture",
-      callback: () => {
-        resetTranscript();
-        handleSpeech("capture");
-      },
-      matchInterim: true,
-    },
-    {
-      command: "doctor",
-      callback: () => {
-        resetTranscript();
-        handleSpeech("capture");
-      },
-      matchInterim: true,
-    },
-  ];
-  const { transcript, resetTranscript } = useSpeechRecognition({ commands });
-
-  if (!SpeechRecognition.browserSupportsSpeechRecognition()) {
-    return null;
-  }
-
-  SpeechRecognition.startListening({
-    continuous: true,
-    language: "en-US, he",
-  });
-  // if (transcript.localeCompare("capture") === 0) {
-  //   console.log("im here")
-  //   resetTranscript();
-  // }
-
-  // resetTranscript()
-  // setInterval(resetTranscript(), 2000)
-
-  return (
-    <div>
-      {/* <button onClick={SpeechRecognition.startListening}>Start</button> */}
-      {/* <button onClick={SpeechRecognition.stopListening}>Stop</button> */}
-      {/* <button onClick={resetTranscript}>Reset</button> */}
-      {/* <p>{transcript}</p> */}
-    </div>
   );
 };
