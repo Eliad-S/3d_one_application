@@ -8,6 +8,7 @@ export default class SettingsScreen extends React.Component {
       settings: props.settings,
       obj_radius: props.settings["obj_radius"],
       number_of_frames: props.settings["number_of_frames"],
+      obj_deviation: props.settings["obj_deviation"],
       recreating: false,
     };
     this.handleVoiceControlChange = this.handleVoiceControlChange.bind(this);
@@ -29,7 +30,7 @@ export default class SettingsScreen extends React.Component {
       value = Number.parseFloat(value).toFixed(3);
     }
     if (key != "number_of_frames") {
-      value = Number.parseFloat(value).toFixed(2);
+      value = Number.parseFloat(value).toFixed(3);
     }
     if (key === "obj_radius") {
       this.setState({
@@ -39,6 +40,11 @@ export default class SettingsScreen extends React.Component {
     if (key === "number_of_frames") {
       this.setState({
         number_of_frames: event.target.value,
+      });
+    }
+    if (key === "obj_deviation") {
+      this.setState({
+        obj_deviation: value,
       });
     }
     fetch("/settings/" + key + "/" + value)
@@ -202,6 +208,30 @@ export default class SettingsScreen extends React.Component {
                 {this.state.number_of_frames}
                 <br />
                 <small>4 is the recommended number of frames.</small>
+              </div>
+            </div>
+            <div className="row m-4 p-4 border-bottom">
+              <div className="col-3 text-right">
+                <label htmlFor="points">Object Deviation Correction:</label>
+              </div>
+              <div className="col-5 float-left text-left">
+                <input
+                  className="w-75 mr-2"
+                  type="range"
+                  id="obj_deviation"
+                  name="points"
+                  step="0.001"
+                  defaultValue={this.state.obj_deviation}
+                  min="0"
+                  max="0.03"
+                  onChange={this.handleObjParamsChange}
+                />{" "}
+                {this.state.obj_deviation}
+                <br />
+                <small>
+                  This field will help fix object's misalignment issues.
+                  It is recommended to use this field only for recreating a model.
+                </small>
               </div>
             </div>
             <div className="row m-4 p-4 border-bottom">
