@@ -44,6 +44,7 @@ def rotate_point_cloud(cloud, number_of_frames, frame_number):
 def point_of_origin(cloud):
     center = o3d.geometry.PointCloud.get_center(cloud)
     center[2] += setting_manager.get_val("obj_distance")
+    center[0] += setting_manager.get_val("obj_deviation")
     mesh = cloud
     mesh_mv = copy.deepcopy(mesh).translate(center, relative=False)
     print(f'Center of mesh: {mesh.get_center()}')
@@ -121,6 +122,7 @@ def merge_ply_files():
     return pcd
 
 
+
 def point_cloud_to_mesh(pcd):
 
     print('run Poisson surface reconstruction')
@@ -138,7 +140,7 @@ def mesh3(pcd):
         mesh, densities = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(pcd, depth=9, n_threads=8)
 
     print('remove low density vertices')
-    vertices_to_remove = densities < np.quantile(densities, 0.01)
+    vertices_to_remove = densities < np.quantile(densities, 0.1)
     mesh.remove_vertices_by_mask(vertices_to_remove)
     return mesh
 
@@ -169,13 +171,12 @@ def create_3d_model():
     print("stroopppp")
     cropped_pcd = crop_dinamically(pcd)
 
-    # cl, ind = cropped_pcd.remove_statistical_outlier(nb_neighbors=10, std_ratio=2.0)
-    cl, ind = cropped_pcd.remove_radius_outlier(nb_points=30, radius=0.005)
+    cl, ind = cropped_pcd.remove_radius_outlier(nb_points=20, radius=0.004)
+    # cl, ind = cl.remove_statistical_outlier(nb_neighbors=30, std_ratio=2.0)
     # draw_point_cloud(cl)
     mesh = mesh3(cl)  # change to obj file
     # draw_point_cloud(mesh)
     return mesh
-
 
 def covert_to_obj(mesh, obj_url):
     o3d.io.write_triangle_mesh(obj_url,

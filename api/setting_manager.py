@@ -44,7 +44,8 @@ class Setting_Manager:
         settings['obj_radius'] = 0.35
         settings['voice_control'] = True
         settings['last_object'] = ""
-        settings['last_NOF'] = 4
+        settings['last_NOF'] = 4,
+        settings["obj_deviation"] = 0
 
         try:
             with open(file_name, 'w') as outfile:

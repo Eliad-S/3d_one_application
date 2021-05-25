@@ -177,6 +177,16 @@ def set_obj_distance(obj_distance):
         return make_response("error occured while changing value", 404)
 
 
+@app.route('/settings/obj_deviation/<float:obj_deviation>', methods=['GET'])
+def set_obj_deviation(obj_deviation):
+    try:
+        setting_manager.modify_val("obj_deviation", obj_deviation)
+        return make_response(f'obj_deviation has changed to {obj_deviation}', 200)
+    except Exception as error:
+        print(error)
+        return make_response("error occured while changing value", 404)
+
+
 @app.route('/settings/obj_radius/<float:obj_radius>', methods=['GET'])
 def set_obj_radius(obj_radius):
     try:
@@ -237,7 +247,7 @@ def create_model(name=None):
         return make_response(jsonify("failed creating model"), 404)
 
 
-@app.route('/models/recreate', methods=['GET'])
+@app.route('/recreate', methods=['GET'])
 def recreate_model():
     name = setting_manager.get_val("last_object")
     if name == "":
