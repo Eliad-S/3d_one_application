@@ -1,11 +1,9 @@
 {
-    "last_NOF": [
-        4
-    ],
-    "last_object": "",
+    "last_NOF": 4,
+    "last_object": "Rizpaz",
     "number_of_frames": 4,
-    "obj_deviation": 0.003,
-    "obj_distance": 0.8,
-    "obj_radius": 0.35,
+    "obj_deviation": 0.01,
+    "obj_distance": 0.61,
+    "obj_radius": 0.15,
     "voice_control": true
 }

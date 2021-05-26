@@ -167,7 +167,7 @@ export default class SettingsScreen extends React.Component {
             </div>
             <div className="row m-4 p-4 border-bottom">
               <div className="col-3 text-right">
-                <label htmlFor="points">Object Radius:</label>
+                <label htmlFor="points">Object Radius in Meters:</label>
               </div>
               <div className="col-5 float-left text-left">
                 <input
@@ -212,7 +212,7 @@ export default class SettingsScreen extends React.Component {
             </div>
             <div className="row m-4 p-4 border-bottom">
               <div className="col-3 text-right">
-                <label htmlFor="points">Object Deviation Correction:</label>
+                <label htmlFor="points">Object Deviation Correction in Meters:</label>
               </div>
               <div className="col-5 float-left text-left">
                 <input
