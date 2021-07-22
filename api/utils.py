@@ -175,8 +175,9 @@ def create_3d_model():
     # cl, ind = cl.remove_statistical_outlier(nb_neighbors=30, std_ratio=2.0)
     # draw_point_cloud(cl)
     mesh = mesh3(cl)  # change to obj file
-    # draw_point_cloud(mesh)
+    draw_point_cloud(mesh)
     return mesh
+create_3d_model()
 
 def covert_to_obj(mesh, obj_url):
     o3d.io.write_triangle_mesh(obj_url,
